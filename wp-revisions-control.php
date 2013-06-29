@@ -217,8 +217,6 @@ class WP_Revisions_Control {
 					self::$post_types[ $type ] = $name;
 				}
 			}
-
-			self::$post_types = array_unique( self::$post_types );
 		}
 
 		return self::$post_types;
