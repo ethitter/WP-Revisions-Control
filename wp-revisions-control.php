@@ -58,19 +58,6 @@ class WP_Revisions_Control {
 	}
 
 	/**
-	 * Magic getter to provide access to class variables
-	 *
-	 * @param string $name
-	 * @return mixed
-	 */
-	// public function __get( $name ) {
-	//	if ( property_exists( $this, $name ) )
-	//		return $this->$name;
-	//	else
-	//		return null;
-	// }
-
-	/**
 	 * Register actions and filters
 	 *
 	 * @uses add_action
@@ -89,11 +76,21 @@ class WP_Revisions_Control {
 	public function action_admin_init() {
 		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
 
-		add_settings_section( $this->settings_section, __( 'WP Revisions Control', 'wp_revisions_control' ), '__return_false', $this->settings_page );
+		add_settings_section( $this->settings_section, __( 'WP Revisions Control', 'wp_revisions_control' ), array( $this, 'settings_section_intro' ), $this->settings_page );
 
 		foreach ( $this->get_post_types() as $post_type => $name ) {
 			add_settings_field( $this->settings_section . '-' . $post_type, $name, array( $this, 'field_post_type' ), $this->settings_page, $this->settings_section, array( 'post_type' => $post_type ) );
 		}
+	}
+
+	/**
+	 *
+	 */
+	public function settings_section_intro() {
+		?>
+		<p><?php _e( 'Set the number of revisions to save for each post type listed. To retain all revisions for a given post type, leave the field empty.', 'wp_revisions_control' ); ?></p>
+		<p><?php _e( "If a post type isn't listed, revisions are not enabled for that post type.", 'wp_revisions_control' ); ?></p>
+		<?php
 	}
 
 	/**
@@ -114,10 +111,14 @@ class WP_Revisions_Control {
 
 		if ( is_array( $options ) ) {
 			foreach ( $options as $post_type => $to_keep ) {
-				if ( empty( $to_keep ) )
+				if ( 0 === strlen( $to_keep ) )
 					$to_keep = -1;
 				else
 					$to_keep = intval( $to_keep );
+
+				// Lowest possible value is -1, used to indicate infinite revisions are stored
+				if ( -1 > $to_keep )
+					$to_keep = -1;
 
 				$options_sanitized[ $post_type ] = $to_keep;
 			}
