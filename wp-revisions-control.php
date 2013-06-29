@@ -32,6 +32,7 @@ class WP_Revisions_Control {
 	 * Class variables
 	 */
 	private static $post_types = array();
+	private static $settings = array();
 
 	private $settings_page = 'writing';
 	private $settings_section = 'wp_revisions_control';
@@ -172,20 +173,24 @@ class WP_Revisions_Control {
 	 * @return array
 	 */
 	private function get_settings() {
-		$post_types = $this->get_post_types();
+		if ( empty( self::$settings ) ) {
+			$post_types = $this->get_post_types();
 
-		$settings = get_option( $this->settings_section, array() );
+			$settings = get_option( $this->settings_section, array() );
 
-		$merged_settings = array();
+			$merged_settings = array();
 
-		foreach ( $post_types as $post_type => $name ) {
-			if ( array_key_exists( $post_type, $settings ) )
-				$merged_settings[ $post_type ] = (int) $settings[ $post_type ];
-			else
-				$merged_settings[ $post_type ] = -1;
+			foreach ( $post_types as $post_type => $name ) {
+				if ( array_key_exists( $post_type, $settings ) )
+					$merged_settings[ $post_type ] = (int) $settings[ $post_type ];
+				else
+					$merged_settings[ $post_type ] = -1;
+			}
+
+			self::$settings = $merged_settings;
 		}
 
-		return $merged_settings;
+		return self::$settings;
 	}
 
 	/**
