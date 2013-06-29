@@ -71,7 +71,15 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Register plugin's settings fields
 	 *
+	 * @uses register_setting
+	 * @uses add_settings_section
+	 * @uses __
+	 * @uses this::get_post_types
+	 * @uses add_settings_field
+	 * @action admin_init
+	 * @return null
 	 */
 	public function action_admin_init() {
 		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
@@ -84,7 +92,10 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Display assistive text in settings section
 	 *
+	 * @uses _e
+	 * @return string
 	 */
 	public function settings_section_intro() {
 		?>
@@ -94,17 +105,25 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Render field for each post type
 	 *
+	 * @param array $args
+	 * @uses this::get_revisions_to_keep
+	 * @uses esc_attr
+	 * @return string
 	 */
 	public function field_post_type( $args ) {
 		$revisions_to_keep = $this->get_revisions_to_keep( $args['post_type'], true );
 		?>
-		<input type="text" name="<?php echo $this->settings_section . '[' . $args['post_type'] . ']'; ?>" value="<?php echo esc_attr( $revisions_to_keep ); ?>" class="small-text" />
+		<input type="text" name="<?php echo esc_attr( $this->settings_section . '[' . $args['post_type'] . ']' ); ?>" value="<?php echo esc_attr( $revisions_to_keep ); ?>" class="small-text" />
 		<?php
 	}
 
 	/**
+	 * Sanitize plugin settings
 	 *
+	 * @param array $options
+	 * @return array
 	 */
 	public function sanitize_options( $options ) {
 		$options_sanitized = array();
@@ -128,7 +147,12 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Override number of revisions to keep using plugin's settings
 	 *
+	 * @uses get_post_type
+	 * @uses this::get_settings
+	 * @filter wp_revisions_to_keep
+	 * @return mixed
 	 */
 	public function filter_wp_revisions_to_keep( $qty, $post ) {
 		$post_type = get_post_type( $post ) ? get_post_type( $post ) : $post->post_type;
@@ -141,7 +165,11 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Retrieve plugin settings
 	 *
+	 * @uses this::get_post_types
+	 * @uses get_option
+	 * @return array
 	 */
 	private function get_settings() {
 		$post_types = $this->get_post_types();
@@ -161,7 +189,12 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Retrieve array of supported post types and their labels
 	 *
+	 * @uses get_post_types
+	 * @uses post_type_supports
+	 * @uses get_post_type_object
+	 * @return array
 	 */
 	private function get_post_types() {
 		if ( empty( self::$post_types ) ) {
@@ -187,7 +220,11 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Retrieve number of revisions to keep for a given post type
 	 *
+	 * @uses WP_Post
+	 * @uses wp_revisions_to_keep
+	 * @return mixed
 	 */
 	private function get_revisions_to_keep( $post_type, $blank_for_all = false ) {
 		// wp_revisions_to_keep() accepts a post object, not just the post type
