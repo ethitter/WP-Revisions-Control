@@ -36,8 +36,6 @@ class WP_Revisions_Control {
 	private $settings_page = 'writing';
 	private $settings_section = 'wp_revisions_control';
 
-	private $option_name = 'wp_revisions_ctl';
-
 	/**
 	 * Silence is golden!
 	 */
@@ -81,13 +79,15 @@ class WP_Revisions_Control {
 	 */
 	private function setup() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
+
+		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), 10, 2 );
 	}
 
 	/**
 	 *
 	 */
 	public function action_admin_init() {
-		register_setting( $this->settings_page, $this->option_name, array( $this, 'sanitize_options' ) );
+		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
 
 		add_settings_section( $this->settings_section, __( 'WP Revisions Control', 'wp_revisions_control' ), '__return_false', $this->settings_page );
 
@@ -100,14 +100,63 @@ class WP_Revisions_Control {
 	 *
 	 */
 	public function field_post_type( $args ) {
-
+		$revisions_to_keep = $this->get_revisions_to_keep( $args['post_type'], true );
+		?>
+		<input type="text" name="<?php echo $this->settings_section . '[' . $args['post_type'] . ']'; ?>" value="<?php echo esc_attr( $revisions_to_keep ); ?>" class="small-text" />
+		<?php
 	}
 
 	/**
 	 *
 	 */
 	public function sanitize_options( $options ) {
+		$options_sanitized = array();
 
+		if ( is_array( $options ) ) {
+			foreach ( $options as $post_type => $to_keep ) {
+				if ( empty( $to_keep ) )
+					$to_keep = -1;
+				else
+					$to_keep = intval( $to_keep );
+
+				$options_sanitized[ $post_type ] = $to_keep;
+			}
+		}
+
+		return $options_sanitized;
+	}
+
+	/**
+	 *
+	 */
+	public function filter_wp_revisions_to_keep( $qty, $post ) {
+		$post_type = get_post_type( $post ) ? get_post_type( $post ) : $post->post_type;
+		$settings = $this->get_settings();
+
+		if ( array_key_exists( $post_type, $settings ) )
+			return $settings[ $post_type ];
+
+		return $qty;
+	}
+
+	/**
+	 *
+	 */
+	private function get_settings() {
+		$post_types = $this->get_post_types();
+
+		$settings = get_option( $this->settings_section, array() );
+
+		$merged_settings = array();
+
+		foreach ( $post_types as $post_type => $name ) {
+			if ( array_key_exists( $post_type, $settings ) )
+				$merged_settings[ $post_type ] = (int) $settings[ $post_type ];
+			else
+				$merged_settings[ $post_type ] = -1;
+		}
+
+		return $merged_settings;
 	}
 
 	/**
@@ -134,6 +183,21 @@ class WP_Revisions_Control {
 		}
 
 		return self::$post_types;
+	}
+
+	/**
+	 *
+	 */
+	private function get_revisions_to_keep( $post_type, $blank_for_all = false ) {
+		// wp_revisions_to_keep() accepts a post object, not just the post type
+		// We construct a new WP_Post object to ensure anything hooked to the wp_revisions_to_keep filter has the same basic data WP provides.
+		$_post = new WP_Post( (object) array( 'post_type' => $post_type ) );
+		$to_keep = wp_revisions_to_keep( $_post );
+
+		if ( $blank_for_all && -1 == $to_keep )
+			return '';
+		else
+			return (int) $to_keep;
 	}
 }
 WP_Revisions_Control::get_instance();
