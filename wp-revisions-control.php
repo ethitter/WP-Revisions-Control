@@ -31,7 +31,12 @@ class WP_Revisions_Control {
 	/**
 	 * Class variables
 	 */
+	private static $post_types = array();
 
+	private $settings_page = 'writing';
+	private $settings_section = 'wp_revisions_control';
+
+	private $option_name = 'wp_revisions_ctl';
 
 	/**
 	 * Silence is golden!
@@ -75,7 +80,60 @@ class WP_Revisions_Control {
 	 * @return null
 	 */
 	private function setup() {
+		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
+	}
 
+	/**
+	 *
+	 */
+	public function action_admin_init() {
+		register_setting( $this->settings_page, $this->option_name, array( $this, 'sanitize_options' ) );
+
+		add_settings_section( $this->settings_section, __( 'WP Revisions Control', 'wp_revisions_control' ), '__return_false', $this->settings_page );
+
+		foreach ( $this->get_post_types() as $post_type => $name ) {
+			add_settings_field( $this->settings_section . '-' . $post_type, $name, array( $this, 'field_post_type' ), $this->settings_page, $this->settings_section, array( 'post_type' => $post_type ) );
+		}
+	}
+
+	/**
+	 *
+	 */
+	public function field_post_type( $args ) {
+
+	}
+
+	/**
+	 *
+	 */
+	public function sanitize_options( $options ) {
+
+	}
+
+	/**
+	 *
+	 */
+	private function get_post_types() {
+		if ( empty( self::$post_types ) ) {
+			$types = get_post_types();
+
+			foreach ( $types as $type ) {
+				if ( post_type_supports( $type, 'revisions' ) ) {
+					$object = get_post_type_object( $type );
+
+					if ( property_exists( $object, 'labels' ) && property_exists( $object->labels, 'name' ) )
+						$name = $object->labels->name;
+					else
+						$name = $object->name;
+
+					self::$post_types[ $type ] = $name;
+				}
+			}
+
+			self::$post_types = array_unique( self::$post_types );
+		}
+
+		return self::$post_types;
 	}
 }
 WP_Revisions_Control::get_instance();
