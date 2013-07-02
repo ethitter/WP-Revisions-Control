@@ -72,13 +72,15 @@ class WP_Revisions_Control {
 	 * Register actions and filters
 	 *
 	 * @uses add_action
+	 * @uses apply_filters
 	 * @uses add_filter
 	 * @return null
 	 */
 	public function action_init() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
 
-		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), 50, 2 );
+		$plugin_priority = apply_filters( 'wp_revisions_control_priority', 50 );
+		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), $plugin_priority, 2 );
 	}
 
 	/**
