@@ -31,8 +31,8 @@ class WP_Revisions_Control {
 	/**
 	 * Class variables
 	 */
-	private static $post_types = array();
-	private static $settings = array();
+	private static $post_types = array(); // use $this->get_post_types()
+	private static $settings = array(); // use $this->get_settings()
 
 	private $settings_page = 'writing';
 	private $settings_section = 'wp_revisions_control';
