@@ -12,7 +12,7 @@ Control how many revisions are stored for each post type.
 
 == Description ==
 
-WordPress 3.6 now allows users to control how many revisions are stored for each supported post type. No longer must you rely on the `WP_POST_REVISIONS` constant, which applied unniversally. With this plugin enabled, simply visit **Settings > Writing** to specify the number of revisions retained for each post type.
+WordPress 3.6 allows users to control how many revisions are stored for each supported post type. No longer must you rely on the `WP_POST_REVISIONS` constant, which applied universally. With this plugin enabled, simply visit **Settings > Writing** to specify the number of revisions retained for each post type.
 
 **Development is over on GitHub: https://github.com/ethitter/WP-Revisions-Control.**
 
@@ -31,3 +31,7 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 
 = 1.0 =
 Initial public release
+
+== Screenshots ==
+
+1. The plugin's settings section, found under **Settings > Writing**.
