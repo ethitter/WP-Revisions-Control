@@ -31,6 +31,9 @@ class WP_Revisions_Control {
 	/**
 	 * Class variables
 	 */
+	private static $priority = null; // use $this->plugin_priority()
+	private $priority_default = 50;
+
 	private static $post_types = array(); // use $this->get_post_types()
 	private static $settings = array(); // use $this->get_settings()
 
@@ -72,19 +75,20 @@ class WP_Revisions_Control {
 	 * Register actions and filters
 	 *
 	 * @uses add_action
-	 * @uses apply_filters
 	 * @uses add_filter
+	 * @uses this::plugin_priority
 	 * @return null
 	 */
 	public function action_init() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
 
-		$plugin_priority = apply_filters( 'wp_revisions_control_priority', 50 );
-		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), $plugin_priority, 2 );
+		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), $this->plugin_priority(), 2 );
 	}
 
 	/**
 	 * Register plugin's settings fields
+	 *
+	 * Plugin title is intentionally not translatable.
 	 *
 	 * @uses register_setting
 	 * @uses add_settings_section
@@ -108,6 +112,7 @@ class WP_Revisions_Control {
 	 * Display assistive text in settings section
 	 *
 	 * @uses _e
+	 * @uses this::plugin_priority
 	 * @return string
 	 */
 	public function settings_section_intro() {
@@ -115,6 +120,12 @@ class WP_Revisions_Control {
 		<p><?php _e( 'Set the number of revisions to save for each post type listed. To retain all revisions for a given post type, leave the field empty.', 'wp_revisions_control' ); ?></p>
 		<p><?php _e( "If a post type isn't listed, revisions are not enabled for that post type.", 'wp_revisions_control' ); ?></p>
 		<?php
+
+		// Display a note if the plugin priority is other than the default.
+		// Will be useful when debugging issues later.
+		if ( $this->plugin_priority() !== $this->priority_default ) : ?>
+			<p><?php _e( "A local change is causing this plugin's functionality to run at a priority other than the default. If you experience difficulties with the plugin, please unhook any functions from the <code>wp_revisions_control_priority</code> filter.", 'wp_revisions_control' ); ?></p>
+		<?php endif;
 	}
 
 	/**
@@ -157,6 +168,22 @@ class WP_Revisions_Control {
 		}
 
 		return $options_sanitized;
+	}
+
+	/**
+	 * Allow others to change the priority this plugin's functionality runs at
+	 *
+	 * @uses apply_filters
+	 * @return int
+	 */
+	private function plugin_priority() {
+		if ( is_null( self::$priority ) ) {
+			$plugin_priority = apply_filters( 'wp_revisions_control_priority', $this->priority_default );
+
+			self::$priority = is_numeric( $plugin_priority ) ? (int) $plugin_priority : $this->priority_default;
+		}
+
+		return self::$priority;
 	}
 
 	/**
