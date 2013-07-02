@@ -62,7 +62,7 @@ class WP_Revisions_Control {
 	}
 
 	/**
-	 * Register actions and filters at init so others can interact, if desired.
+	 * Register actions and filters at `init` so others can interact, if desired.
 	 *
 	 * @uses add_action
 	 * @return null
