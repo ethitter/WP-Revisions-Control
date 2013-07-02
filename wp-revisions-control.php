@@ -68,7 +68,7 @@ class WP_Revisions_Control {
 	private function setup() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
 
-		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), 10, 2 );
+		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), 50, 2 );
 	}
 
 	/**
