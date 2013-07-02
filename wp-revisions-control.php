@@ -59,13 +59,23 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Register actions and filters at init so others can interact, if desired.
+	 *
+	 * @uses add_action
+	 * @return null
+	 */
+	private function setup() {
+		add_action( 'init', array( $this, 'action_init' ) );
+	}
+
+	/**
 	 * Register actions and filters
 	 *
 	 * @uses add_action
 	 * @uses add_filter
 	 * @return null
 	 */
-	private function setup() {
+	public function action_init() {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
 
 		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), 50, 2 );
