@@ -109,6 +109,11 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 ** PLUGIN SETTINGS SECTION
+	 ** FOUND UNDER SETTINGS > WRITING
+	 **/
+
+	/**
 	 * Display assistive text in settings section
 	 *
 	 * @uses _e
@@ -171,6 +176,10 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 ** REVISIONS QUANTITY OVERRIDES
+	 **/
+
+	/**
 	 * Allow others to change the priority this plugin's functionality runs at
 	 *
 	 * @uses apply_filters
@@ -203,6 +212,10 @@ class WP_Revisions_Control {
 
 		return $qty;
 	}
+
+	/**
+	 ** PLUGIN UTILITIES
+	 **/
 
 	/**
 	 * Retrieve plugin settings
