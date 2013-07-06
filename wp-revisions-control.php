@@ -40,6 +40,8 @@ class WP_Revisions_Control {
 	private $settings_page = 'writing';
 	private $settings_section = 'wp_revisions_control';
 
+	private $meta_key_limit = '_wp_rev_ctl_limit';
+
 	/**
 	 * Silence is golden!
 	 */
@@ -111,6 +113,7 @@ class WP_Revisions_Control {
 		// Post-level functionality
 		add_action( 'add_meta_boxes', array( $this, 'action_add_meta_boxes' ), 10, 2 );
 		add_action( 'wp_ajax_' . $this->settings_section . '_purge', array( $this, 'ajax_purge' ) );
+		add_action( 'save_post', array( $this, 'action_save_post' ) );
 	}
 
 	/**
@@ -255,11 +258,20 @@ class WP_Revisions_Control {
 	public function revisions_meta_box( $post ) {
 		post_revisions_meta_box( $post );
 
+		$limit = get_post_meta( $post->ID, $this->meta_key_limit, true );
+		$limit = -1 == $limit ? '' : (int) $limit;
+
 		?>
 		<div id="<?php echo esc_attr( $this->settings_section ); ?>">
 			<h4>WP Revisions Control</h4>
 
-			<span class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></span>
+			<p class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></p>
+
+			<p>
+				<?php printf( __( 'Limit this post to %s revisions. To retain all revisions, leave this field blank.', 'wp_revisions_control' ), '<input type="text" name="' . $this->settings_section . '_qty" value="' . $limit . '" id="' . $this->settings_section . '_qty" size="2" />' ); ?>
+
+				<?php wp_nonce_field( $this->settings_section . '_limit', $this->settings_section . '_limit_nonce', false ); ?>
+			</p>
 		</div><!-- #<?php echo esc_attr( $this->settings_section ); ?> -->
 		<?php
 	}
@@ -305,6 +317,27 @@ class WP_Revisions_Control {
 		// Pass the response back to JS
 		echo json_encode( $response );
 		exit;
+	}
+
+	/**
+	 * Sanitize and store post-specifiy revisions quantity
+	 *
+	 * @uses wp_verify_nonce
+	 * @uses update_post_meta
+	 * @action save_post
+	 * @return null
+	 */
+	public function action_save_post( $post_id ) {
+		if ( isset( $_POST[ $this->settings_section . '_limit_nonce' ] ) && wp_verify_nonce( $_POST[ $this->settings_section . '_limit_nonce' ], $this->settings_section . '_limit' ) && isset( $_POST[ $this->settings_section . '_qty' ] ) ) {
+			$limit = $_POST[ $this->settings_section . '_qty' ];
+
+			if ( -1 == $limit || empty( $limit ) )
+				$limit = -1;
+			else
+				$limit = absint( $limit );
+
+			update_post_meta( $post_id, $this->meta_key_limit, $limit );
+		}
 	}
 
 	/**
