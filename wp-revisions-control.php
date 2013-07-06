@@ -86,7 +86,7 @@ class WP_Revisions_Control {
 	}
 
 	/**
-	 * Register plugin's settings fields
+	 * Register plugin's settings fields and meta box
 	 *
 	 * Plugin title is intentionally not translatable.
 	 *
@@ -99,6 +99,7 @@ class WP_Revisions_Control {
 	 * @return null
 	 */
 	public function action_admin_init() {
+		// Plugin setting section
 		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
 
 		add_settings_section( $this->settings_section, 'WP Revisions Control', array( $this, 'settings_section_intro' ), $this->settings_page );
@@ -106,6 +107,9 @@ class WP_Revisions_Control {
 		foreach ( $this->get_post_types() as $post_type => $name ) {
 			add_settings_field( $this->settings_section . '-' . $post_type, $name, array( $this, 'field_post_type' ), $this->settings_page, $this->settings_section, array( 'post_type' => $post_type ) );
 		}
+
+		// Post-level functionality
+		add_action( 'add_meta_boxes', array( $this, 'action_add_meta_boxes' ), 10, 2 );
 	}
 
 	/**
@@ -211,6 +215,38 @@ class WP_Revisions_Control {
 			return $settings[ $post_type ];
 
 		return $qty;
+	}
+
+	/**
+	 ** POST-LEVEL FUNCTIONALITY
+	 **/
+
+	/**
+	 * Override Core's revisions metabox
+	 *
+	 * @param string $post_type
+	 * @param object $post
+	 * @action add_meta_boxes
+	 * @return null
+	 */
+	public function action_add_meta_boxes( $post_type, $post ) {
+		remove_meta_box( 'revisionsdiv', null, 'normal' );
+
+		if ( post_type_supports( $post_type, 'revisions' ) && 'auto-draft' != get_post_status() && count( wp_get_post_revisions( $post ) ) > 1 )
+			add_meta_box( 'revisionsdiv-wp-rev-ctl', __('Revisions'), array( $this, 'revisions_meta_box' ), null, 'normal', 'core' );
+	}
+
+	/**
+	 *
+	 */
+	public function revisions_meta_box( $post ) {
+		post_revisions_meta_box( $post );
+
+		?>
+		<div id="<?php echo esc_attr( $this->settings_section ); ?>">
+			<h4>WP Revisions Control</h4>
+		</div><!-- #<?php echo esc_attr( $this->settings_section ); ?> -->
+		<?php
 	}
 
 	/**
