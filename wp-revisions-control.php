@@ -4,7 +4,7 @@ Plugin Name: WP Revisions Control
 Plugin URI: http://www.ethitter.com/plugins/wp-revisions-control/
 Description: Control how many revisions are stored for each post type
 Author: Erick Hitter
-Version: 1.1
+Version: 1.2
 Author URI: http://www.ethitter.com/
 
 This program is free software; you can redistribute it and/or modify
