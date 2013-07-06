@@ -239,15 +239,26 @@ class WP_Revisions_Control {
 	 *
 	 * @param string $post_type
 	 * @param object $post
+	 * @uses post_type_supports
+	 * @uses get_post_status
+	 * @uses wp_get_post_revisions
+	 * @uses remove_meta_box
+	 * @uses add_meta_box
+	 * @uses wp_enqueue_script
+	 * @uses plugins_url
+	 * @uses wp_localize_script
+	 * @uses wpautop
+	 * @uses add_action
 	 * @action add_meta_boxes
 	 * @return null
 	 */
 	public function action_add_meta_boxes( $post_type, $post ) {
-		remove_meta_box( 'revisionsdiv', null, 'normal' );
-
 		if ( post_type_supports( $post_type, 'revisions' ) && 'auto-draft' != get_post_status() && count( wp_get_post_revisions( $post ) ) > 1 ) {
+			// Replace the metabox
+			remove_meta_box( 'revisionsdiv', null, 'normal' );
 			add_meta_box( 'revisionsdiv-wp-rev-ctl', __('Revisions'), array( $this, 'revisions_meta_box' ), null, 'normal', 'core' );
 
+			// A bit of JS for us
 			$handle = 'wp-revisions-control-post';
 			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __FILE__ ), array( 'jquery' ), '20130706', true );
 			wp_localize_script( $handle, $this->settings_section, array(
@@ -256,8 +267,12 @@ class WP_Revisions_Control {
 				'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
 				'ays'             => __( 'Are you sure?', 'wp_revisions_control' ),
 				'autosave'        => __( 'Autosave' ),
-				'nothing_text'    => __( wpautop( 'There are no revisions to remove.' ), 'wp_revisions_control' )
+				'nothing_text'    => __( wpautop( 'There are no revisions to remove.' ), 'wp_revisions_control' ),
+				'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' )
 			) );
+
+			// Add some styling to our metabox additions
+			add_action( 'admin_head', array( $this, 'action_admin_head' ), 999 );
 		}
 	}
 
@@ -265,6 +280,7 @@ class WP_Revisions_Control {
 	 * Render Revisions metabox with plugin's additions
 	 *
 	 * @uses post_revisions_meta_box
+	 * @uses the_ID
 	 * @uses esc_attr
 	 * @uses wp_create_nonce
 	 * @uses this::get_post_revisions_to_keep
@@ -319,9 +335,9 @@ class WP_Revisions_Control {
 
 			$count = count( $revisions );
 
-			// foreach ( $revisions as $revision ) {
-			//	wp_delete_post_revision( $revision->ID );
-			// }
+			foreach ( $revisions as $revision ) {
+				wp_delete_post_revision( $revision->ID );
+			}
 
 			$response['success'] = sprintf( __( 'Removed %s revisions associated with this post.', 'wp_revisions_control' ), number_format_i18n( $count, 0 ) );
 			$response['count'] = $count;
@@ -349,6 +365,31 @@ class WP_Revisions_Control {
 			else
 				update_post_meta( $post_id, $this->meta_key_limit, absint( $limit ) );
 		}
+	}
+
+	/**
+	 * Add a border between the regular revisions list and this plugin's additions
+	 *
+	 * @uses esc_attr
+	 * @action admin_head
+	 * @return string
+	 */
+	public function action_admin_head() {
+	?>
+		<style type="text/css">
+			#revisionsdiv-wp-rev-ctl #<?php echo esc_attr( $this->settings_section ); ?> {
+				 border-top: 1px solid #dfdfdf;
+				 padding-top: 0;
+				 margin-top: 20px;
+			}
+
+			#revisionsdiv-wp-rev-ctl #<?php echo esc_attr( $this->settings_section ); ?> h4 {
+				border-top: 1px solid #fff;
+				padding-top: 1.33em;
+				margin-top: 0;
+			}
+		</style>
+	<?php
 	}
 
 	/**

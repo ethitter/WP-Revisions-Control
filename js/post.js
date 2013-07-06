@@ -10,7 +10,7 @@
 		$( purge_button ).on( 'click', click_handler_purge );
 
 		/**
-		 *
+		 * Click handler for purging a post's revisions
 		 */
 		function click_handler_purge() {
 			post_id = parseInt( $( this ).data( 'postid' ) );
@@ -30,8 +30,8 @@
 					},
 					type: 'post',
 					dataType: 'json',
-					success: ajax_request_success,
-					error: ajax_request_error
+					success: ajax_purge_request_success,
+					error: ajax_purge_request_error
 				});
 			} else {
 				$( purge_button ).text( button_text );
@@ -39,28 +39,35 @@
 		}
 
 		/**
-		 *
+		 * User feedback when Ajax request succeeds
+		 * Does not indicate that purge request successeded
 		 */
-		function ajax_request_success( response ) {
-			console.log( 'Yippee' );
+		function ajax_purge_request_success( response ) {
+			if ( response.error ) {
+				alert( response.error );
 
-			var list_table = $( 'ul.post-revisions > li' );
+				$( purge_button ).text( button_text );
+			} else if ( response.success ) {
+				var list_table = $( 'ul.post-revisions > li' );
 
-			$( list_table ).each( function() {
-				var autosave = $( this ).text().match( wp_revisions_control.autosave );
+				$( list_table ).each( function() {
+					var autosave = $( this ).text().match( wp_revisions_control.autosave );
 
-				if ( ! autosave )
-					$( this ).slideUp( 'slow' ).remove();
-			} );
+					if ( ! autosave )
+						$( this ).slideUp( 'slow' ).remove();
+				} );
 
-			$( purge_button ).fadeOut( 'slow' ).after( wp_revisions_control.nothing_text );
+				$( purge_button ).fadeOut( 'slow' ).after( wp_revisions_control.nothing_text );
+			}
 		}
 
 		/**
-		 *
+		 * Return a generic error when the Ajax request fails
 		 */
-		function ajax_request_error() {
-			console.log( 'Sad panda' );
+		function ajax_purge_request_error() {
+			alert( wp_revisions_control.error );
+
+			$( purge_button ).text( button_text );
 		}
 	} );
 } )( jQuery );
