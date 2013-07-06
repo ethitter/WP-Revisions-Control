@@ -232,8 +232,17 @@ class WP_Revisions_Control {
 	public function action_add_meta_boxes( $post_type, $post ) {
 		remove_meta_box( 'revisionsdiv', null, 'normal' );
 
-		if ( post_type_supports( $post_type, 'revisions' ) && 'auto-draft' != get_post_status() && count( wp_get_post_revisions( $post ) ) > 1 )
+		if ( post_type_supports( $post_type, 'revisions' ) && 'auto-draft' != get_post_status() && count( wp_get_post_revisions( $post ) ) > 1 ) {
 			add_meta_box( 'revisionsdiv-wp-rev-ctl', __('Revisions'), array( $this, 'revisions_meta_box' ), null, 'normal', 'core' );
+
+			$handle = 'wp-revisions-control-post';
+			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __FILE__ ), array( 'jquery' ), '20130706', true );
+			wp_localize_script( $handle, $this->settings_section, array(
+				'action_base'     => $this->settings_section,
+				'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
+				'ays'             => __( 'Are you sure?', 'wp_revisions_control' )
+			) );
+		}
 	}
 
 	/**
@@ -245,6 +254,8 @@ class WP_Revisions_Control {
 		?>
 		<div id="<?php echo esc_attr( $this->settings_section ); ?>">
 			<h4>WP Revisions Control</h4>
+
+			<span class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>_purge"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></span>
 		</div><!-- #<?php echo esc_attr( $this->settings_section ); ?> -->
 		<?php
 	}
