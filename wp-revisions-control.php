@@ -4,7 +4,7 @@ Plugin Name: WP Revisions Control
 Plugin URI: http://www.ethitter.com/plugins/wp-revisions-control/
 Description: Control how many revisions are stored for each post type
 Author: Erick Hitter
-Version: 1.0
+Version: 1.1
 Author URI: http://www.ethitter.com/
 
 This program is free software; you can redistribute it and/or modify
@@ -86,7 +86,7 @@ class WP_Revisions_Control {
 	}
 
 	/**
-	 * Register plugin's settings fields and meta box
+	 * Register plugin's admin-specific elements
 	 *
 	 * Plugin title is intentionally not translatable.
 	 *
@@ -110,6 +110,7 @@ class WP_Revisions_Control {
 
 		// Post-level functionality
 		add_action( 'add_meta_boxes', array( $this, 'action_add_meta_boxes' ), 10, 2 );
+		add_action( 'wp_ajax_' . $this->settings_section . '_purge', array( $this, 'ajax_purge' ) );
 	}
 
 	/**
@@ -238,15 +239,18 @@ class WP_Revisions_Control {
 			$handle = 'wp-revisions-control-post';
 			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __FILE__ ), array( 'jquery' ), '20130706', true );
 			wp_localize_script( $handle, $this->settings_section, array(
+				'namespace'       => $this->settings_section,
 				'action_base'     => $this->settings_section,
 				'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
-				'ays'             => __( 'Are you sure?', 'wp_revisions_control' )
+				'ays'             => __( 'Are you sure?', 'wp_revisions_control' ),
+				'autosave'        => __( 'Autosave' ),
+				'nothing_text'    => __( wpautop( 'There are no revisions to remove.' ), 'wp_revisions_control' )
 			) );
 		}
 	}
 
 	/**
-	 *
+	 * Render Revisions metabox with plugin's additions
 	 */
 	public function revisions_meta_box( $post ) {
 		post_revisions_meta_box( $post );
@@ -255,9 +259,52 @@ class WP_Revisions_Control {
 		<div id="<?php echo esc_attr( $this->settings_section ); ?>">
 			<h4>WP Revisions Control</h4>
 
-			<span class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>_purge"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></span>
+			<span class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></span>
 		</div><!-- #<?php echo esc_attr( $this->settings_section ); ?> -->
 		<?php
+	}
+
+	/**
+	 * Process a post-specific request to purge revisions
+	 *
+	 * @uses __
+	 * @uses check_ajax_referer
+	 * @uses current_user_can
+	 * @uses wp_get_post_revisions
+	 * @uses number_format_i18n
+	 * @return string
+	 */
+	public function ajax_purge() {
+		$post_id = isset( $_REQUEST['post_id'] ) ? (int) $_REQUEST['post_id'] : false;
+
+		// Hold the current state of this Ajax request
+		$response = array();
+
+		// Check for necessary data and capabilities
+		if ( ! $post_id )
+			$response['error'] = __( 'No post ID was provided. Please refresh the page and try again.', 'wp_revisions_control' );
+		elseif ( ! check_ajax_referer( $this->settings_section . '_purge', 'nonce', false ) )
+			$response['error'] = __( 'Invalid request. Please refresh the page and try again.', 'wp_revisions_control' );
+		elseif ( ! current_user_can( 'edit_post', $post_id ) )
+			$response['error'] = __( 'You are not allowed to edit this post.', 'wp_revisions_control' );
+
+		// Request is valid if $response is still empty, as no errors arose above
+		if ( empty( $response ) ) {
+			$revisions = wp_get_post_revisions( $post_id );
+
+			$count = count( $revisions );
+
+			foreach ( $revisions as $revision ) {
+				wp_delete_post_revision( $revision->ID );
+			}
+
+			$response['success'] = sprintf( __( 'Removed %s revisions associated with this post.', 'wp_revisions_control' ), number_format_i18n( $count, 0 ) );
+			$response['count'] = $count;
+		}
+
+		// Pass the response back to JS
+		echo json_encode( $response );
+		exit;
 	}
 
 	/**
