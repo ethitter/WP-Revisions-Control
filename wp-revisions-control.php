@@ -206,17 +206,26 @@ class WP_Revisions_Control {
 	/**
 	 * Override number of revisions to keep using plugin's settings
 	 *
+	 * Can either be post-specific or universal
+	 *
+	 * @uses get_post_meta
 	 * @uses get_post_type
 	 * @uses this::get_settings
 	 * @filter wp_revisions_to_keep
 	 * @return mixed
 	 */
 	public function filter_wp_revisions_to_keep( $qty, $post ) {
-		$post_type = get_post_type( $post ) ? get_post_type( $post ) : $post->post_type;
-		$settings = $this->get_settings();
+		$post_limit = get_post_meta( $post->ID, $this->meta_key_limit, true );
 
-		if ( array_key_exists( $post_type, $settings ) )
-			return $settings[ $post_type ];
+		if ( 0 < strlen( $post_limit ) ) {
+			$qty = $post_limit;
+		} else {
+			$post_type = get_post_type( $post ) ? get_post_type( $post ) : $post->post_type;
+			$settings = $this->get_settings();
+
+			if ( array_key_exists( $post_type, $settings ) )
+				$qty = $settings[ $post_type ];
+		}
 
 		return $qty;
 	}
@@ -254,12 +263,16 @@ class WP_Revisions_Control {
 
 	/**
 	 * Render Revisions metabox with plugin's additions
+	 *
+	 * @uses post_revisions_meta_box
+	 * @uses esc_attr
+	 * @uses wp_create_nonce
+	 * @uses this::get_post_revisions_to_keep
+	 * @uses wp_nonce_field
+	 * @return string
 	 */
 	public function revisions_meta_box( $post ) {
 		post_revisions_meta_box( $post );
-
-		$limit = get_post_meta( $post->ID, $this->meta_key_limit, true );
-		$limit = -1 == $limit ? '' : (int) $limit;
 
 		?>
 		<div id="<?php echo esc_attr( $this->settings_section ); ?>">
@@ -268,7 +281,7 @@ class WP_Revisions_Control {
 			<p class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></p>
 
 			<p>
-				<?php printf( __( 'Limit this post to %s revisions. To retain all revisions, leave this field blank.', 'wp_revisions_control' ), '<input type="text" name="' . $this->settings_section . '_qty" value="' . $limit . '" id="' . $this->settings_section . '_qty" size="2" />' ); ?>
+				<?php printf( __( 'Limit this post to %s revisions. Leave this field blank for default behavior.', 'wp_revisions_control' ), '<input type="text" name="' . $this->settings_section . '_qty" value="' . $this->get_post_revisions_to_keep( $post->ID ) . '" id="' . $this->settings_section . '_qty" size="2" />' ); ?>
 
 				<?php wp_nonce_field( $this->settings_section . '_limit', $this->settings_section . '_limit_nonce', false ); ?>
 			</p>
@@ -306,9 +319,9 @@ class WP_Revisions_Control {
 
 			$count = count( $revisions );
 
-			foreach ( $revisions as $revision ) {
-				wp_delete_post_revision( $revision->ID );
-			}
+			// foreach ( $revisions as $revision ) {
+			//	wp_delete_post_revision( $revision->ID );
+			// }
 
 			$response['success'] = sprintf( __( 'Removed %s revisions associated with this post.', 'wp_revisions_control' ), number_format_i18n( $count, 0 ) );
 			$response['count'] = $count;
@@ -332,11 +345,9 @@ class WP_Revisions_Control {
 			$limit = $_POST[ $this->settings_section . '_qty' ];
 
 			if ( -1 == $limit || empty( $limit ) )
-				$limit = -1;
+				delete_post_meta( $post_id, $this->meta_key_limit );
 			else
-				$limit = absint( $limit );
-
-			update_post_meta( $post_id, $this->meta_key_limit, $limit );
+				update_post_meta( $post_id, $this->meta_key_limit, absint( $limit ) );
 		}
 	}
 
@@ -418,6 +429,24 @@ class WP_Revisions_Control {
 			return '';
 		else
 			return (int) $to_keep;
+	}
+
+	/**
+	 * Retrieve number of revisions to keep for a give post
+	 *
+	 * @param int $post_id
+	 * @uses get_post_meta
+	 * @return mixed
+	 */
+	private function get_post_revisions_to_keep( $post_id ) {
+		$to_keep = get_post_meta( $post_id, $this->meta_key_limit, true );
+
+		if ( -1 == $to_keep || empty( $to_keep ) )
+			$to_keep = '';
+		else
+			$to_keep = (int) $to_keep;
+
+		return $to_keep;
 	}
 }
 WP_Revisions_Control::get_instance();
