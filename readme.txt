@@ -3,8 +3,8 @@ Contributors: ethitter
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=10275434
 Tags: revision, revisions, admin
 Requires at least: 3.6
-Tested up to: 3.6
-Stable tag: 1.2
+Tested up to: 3.8
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,13 +33,19 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 
 == Changelog ==
 
+= 1.2.1 =
+* Introduce Spanish translation thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/).
+
 = 1.2 =
-Add post-level revision purging and limiting. For any post type that supports revisions, you can now limit the number of revisions retained at a post level.
+* Add post-level revision purging and limiting. For any post type that supports revisions, you can now limit the number of revisions retained at a post level.
 
 = 1.0 =
-Initial public release
+* Initial public release
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+Introduces Spanish translation thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/).
 
 = 1.2 =
 For any post type that supports revisions, you can now limit the number of revisions retained at a post level.

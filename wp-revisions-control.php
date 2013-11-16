@@ -4,8 +4,10 @@ Plugin Name: WP Revisions Control
 Plugin URI: http://www.ethitter.com/plugins/wp-revisions-control/
 Description: Control how many revisions are stored for each post type
 Author: Erick Hitter
-Version: 1.2
+Version: 1.2.1
 Author URI: http://www.ethitter.com/
+Text Domain: wp_revisions_control
+Domain Path: /languages/
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -70,7 +72,20 @@ class WP_Revisions_Control {
 	 * @return null
 	 */
 	private function setup() {
+		add_action( 'plugins_loaded', array( $this, 'action_plugins_loaded' ) );
 		add_action( 'init', array( $this, 'action_init' ) );
+	}
+
+	/**
+	 * Load plugin translations
+	 *
+	 * @uses load_plugin_textdomain
+	 * @uses plugin_basename
+	 * @action plugins_loaded
+	 * @return null
+	 */
+	public function action_plugins_loaded() {
+		load_plugin_textdomain( 'wp_revisions_control', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 	}
 
 	/**

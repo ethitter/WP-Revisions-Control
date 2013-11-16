@@ -1,0 +1,62 @@
+# Copyright (C) 2013 WP Revisions Control
+# This file is distributed under the same license as the WP Revisions Control package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Revisions Control 1.0\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/wp-revisions-control\n"
+"POT-Creation-Date: 2013-11-12 18:29:38+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2013-11-14 21:56+0100\n"
+"Last-Translator: jelena kovacevic <jecajeca260@gmail.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: Poedit 1.5.5\n"
+
+#: wp-revisions-control.php:120
+msgid ""
+"Set the number of revisions to save for each post type listed. To retain all "
+"revisions for a given post type, leave the field empty."
+msgstr ""
+"Inserte el número de revisiones a salvar para cada tipo de post listado. "
+"Para obtener todas las revisiones para un tipo de post dado, deje el campo "
+"vacío."
+
+#: wp-revisions-control.php:121
+msgid ""
+"If a post type isn't listed, revisions are not enabled for that post type."
+msgstr ""
+"Si un tipo de post no se lista, las revisiones no están habilitadas para ese "
+"tipo de post."
+
+#: wp-revisions-control.php:127
+msgid ""
+"A local change is causing this plugin's functionality to run at a priority "
+"other than the default. If you experience difficulties with the plugin, "
+"please unhook any functions from the <code>wp_revisions_control_priority</"
+"code> filter."
+msgstr ""
+"Un cambio local está causando que la funcionalidad de este plugin se ejecute "
+"a una prioridad diferente de la de por defecto. Si está experimentando "
+"dificultades con el plugin, por favor desenganche cualquier función del "
+"filtro <code>wp_revisions_control_priority</code>"
+
+#. Plugin Name of the plugin/theme
+msgid "WP Revisions Control"
+msgstr "WP Revisions Control"
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.ethitter.com/plugins/wp-revisions-control/"
+msgstr "http://www.ethitter.com/plugins/wp-revisions-control/"
+
+#. Description of the plugin/theme
+msgid "Control how many revisions are stored for each post type"
+msgstr "Controla cuántas revisiones se almacenan para cada tipo de post"
+
+#. Author of the plugin/theme
+msgid "Erick Hitter"
+msgstr "Erick Hitter"
+
+#. Author URI of the plugin/theme
+msgid "http://www.ethitter.com/"
+msgstr "http://www.ethitter.com/"
