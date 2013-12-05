@@ -152,7 +152,7 @@ class WP_Revisions_Control {
 		// Display a note if the plugin priority is other than the default.
 		// Will be useful when debugging issues later.
 		if ( $this->plugin_priority() !== $this->priority_default ) : ?>
-			<p><?php _e( "A local change is causing this plugin's functionality to run at a priority other than the default. If you experience difficulties with the plugin, please unhook any functions from the <code>wp_revisions_control_priority</code> filter.", 'wp_revisions_control' ); ?></p>
+			<p><?php printf( __( "A local change is causing this plugin's functionality to run at a priority other than the default. If you experience difficulties with the plugin, please unhook any functions from the %s filter.", 'wp_revisions_control' ), '<code>wp_revisions_control_priority</code>' ); ?></p>
 		<?php endif;
 	}
 
@@ -275,14 +275,14 @@ class WP_Revisions_Control {
 
 			// A bit of JS for us
 			$handle = 'wp-revisions-control-post';
-			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __FILE__ ), array( 'jquery' ), '20130706', true );
+			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __FILE__ ), array( 'jquery' ), '20131205', true );
 			wp_localize_script( $handle, $this->settings_section, array(
 				'namespace'       => $this->settings_section,
 				'action_base'     => $this->settings_section,
 				'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
-				'ays'             => __( 'Are you sure?', 'wp_revisions_control' ),
+				'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp_revisions_control' ),
 				'autosave'        => __( 'Autosave' ),
-				'nothing_text'    => __( wpautop( 'There are no revisions to remove.' ), 'wp_revisions_control' ),
+				'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp_revisions_control' ) ),
 				'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' )
 			) );
 

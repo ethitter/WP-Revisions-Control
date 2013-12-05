@@ -40,7 +40,7 @@
 
 		/**
 		 * User feedback when Ajax request succeeds
-		 * Does not indicate that purge request successeded
+		 * Does not indicate that purge request succeeded
 		 */
 		function ajax_purge_request_success( response ) {
 			if ( response.error ) {
