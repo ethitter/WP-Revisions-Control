@@ -18,6 +18,8 @@ With this plugin enabled, simply visit **Settings > Writing** to specify the num
 
 Why is this helpful? Revisions are stored in the database, and if many are stored, can cause bloat. This bloat may lead to slower queries, which can have a noticeable performance impact. The value of these revisions also depends on what is being tracked. For example, I may want to store every revision of the posts I write, but only desire to keep the latest five versions of each page on my site. Starting in WordPress 3.6, this control is available. WordPress doesn’t provide a native interface to specify revisions quantities, so I wrote this quick plugin to do so.
 
+Thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/), the plugin is also available in Spanish. Many thanks to her for her efforts!
+
 **Development is over on GitHub: https://github.com/ethitter/WP-Revisions-Control.**
 
 == Installation ==
