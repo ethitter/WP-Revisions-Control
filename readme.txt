@@ -1,6 +1,6 @@
 === WP Revisions Control ===
 Contributors: ethitter
-Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=10275434
+Donate link: https://ethitter.com/donate/
 Tags: revision, revisions, admin
 Requires at least: 3.6
 Tested up to: 4.2
