@@ -119,7 +119,7 @@ class WP_Revisions_Control {
 		// Plugin setting section
 		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
 
-		add_settings_section( $this->settings_section, 'WP Revisions Control', array( $this, 'settings_section_intro' ), $this->settings_page );
+		add_settings_section( $this->settings_section, __( 'WP Revisions Control', 'wp_revisions_control' ), array( $this, 'settings_section_intro' ), $this->settings_page );
 
 		foreach ( $this->get_post_types() as $post_type => $name ) {
 			add_settings_field( $this->settings_section . '-' . $post_type, $name, array( $this, 'field_post_type' ), $this->settings_page, $this->settings_section, array( 'post_type' => $post_type ) );
