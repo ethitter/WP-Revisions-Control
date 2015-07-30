@@ -307,7 +307,7 @@ class WP_Revisions_Control {
 
 		?>
 		<div id="<?php echo esc_attr( $this->settings_section ); ?>">
-			<h4>WP Revisions Control</h4>
+			<h4><?php _e( 'WP Revisions Control', 'wp_revisions_control' ); ?></h4>
 
 			<p class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></p>
 
