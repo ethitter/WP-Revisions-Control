@@ -354,7 +354,7 @@ class WP_Revisions_Control {
 				wp_delete_post_revision( $revision->ID );
 			}
 
-			$response['success'] = sprintf( __( 'Removed %s revisions associated with this post.', 'wp_revisions_control' ), number_format_i18n( $count, 0 ) );
+			$response['success'] = sprintf( _n( 'Removed %s revision associated with this post.', 'Removed %s revisions associated with this post.', $count, 'wp_revisions_control' ), number_format_i18n( $count, 0 ) );
 			$response['count'] = $count;
 		}
 
