@@ -5,6 +5,7 @@
 .gitignore
 .gitlab-ci.yml
 .travis.yml
+.wordpress-org/*
 .DS_Store
 Thumbs.db
 behat.yml
