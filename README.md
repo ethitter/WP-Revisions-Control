@@ -4,7 +4,7 @@
 **Tags:** revision, revisions, admin  
 **Requires at least:** 3.6  
 **Tested up to:** 5.2  
-**Stable tag:** 1.2.1  
+**Stable tag:** 1.3  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -34,6 +34,10 @@ Thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/), the plu
 Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the **WP Revisions Control** section.
 
 ## Changelog ##
+
+### 1.3 ###
+* Introduce unit tests.
+* Conform to coding standards.
 
 ### 1.2.1 ###
 * Introduce Spanish translation thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/).
