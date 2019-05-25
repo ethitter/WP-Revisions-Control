@@ -146,15 +146,28 @@ class WP_Revisions_Control {
 	 */
 	public function settings_section_intro() {
 		?>
-		<p><?php _e( 'Set the number of revisions to save for each post type listed. To retain all revisions for a given post type, leave the field empty.', 'wp_revisions_control' ); ?></p>
-		<p><?php _e( "If a post type isn't listed, revisions are not enabled for that post type.", 'wp_revisions_control' ); ?></p>
+		<p><?php esc_html_e( 'Set the number of revisions to save for each post type listed. To retain all revisions for a given post type, leave the field empty.', 'wp_revisions_control' ); ?></p>
+		<p><?php esc_html_e( 'If a post type isn\'t listed, revisions are not enabled for that post type.', 'wp_revisions_control' ); ?></p>
 		<?php
 
 		// Display a note if the plugin priority is other than the default.
 		// Will be useful when debugging issues later.
-		if ( $this->plugin_priority() !== $this->priority_default ) : ?>
-			<p><?php printf( __( "A local change is causing this plugin's functionality to run at a priority other than the default. If you experience difficulties with the plugin, please unhook any functions from the %s filter.", 'wp_revisions_control' ), '<code>wp_revisions_control_priority</code>' ); ?></p>
-		<?php endif;
+		if ( $this->plugin_priority() !== $this->priority_default ) :
+			?>
+			<p>
+				<?php
+				printf(
+					/* translators: 1. Filter tag. */
+					esc_html__(
+						'A local change is causing this plugin\'s functionality to run at a priority other than the default. If you experience difficulties with the plugin, please unhook any functions from the %1$s filter.',
+						'wp_revisions_control'
+					),
+					'<code>wp_revisions_control_priority</code>'
+				);
+				?>
+			</p>
+			<?php
+		endif;
 	}
 
 	/**
@@ -257,23 +270,40 @@ class WP_Revisions_Control {
 	 * @param object $post      Post object.
 	 */
 	public function action_add_meta_boxes( $post_type, $post ) {
-		if ( post_type_supports( $post_type, 'revisions' ) && 'auto-draft' != get_post_status() && count( wp_get_post_revisions( $post ) ) > 1 ) {
+		if ( post_type_supports( $post_type, 'revisions' ) && 'auto-draft' !== get_post_status() && count( wp_get_post_revisions( $post ) ) > 1 ) {
 			// Replace the metabox.
 			remove_meta_box( 'revisionsdiv', null, 'normal' );
-			add_meta_box( 'revisionsdiv-wp-rev-ctl', __('Revisions', 'wp_revisions_control'), array( $this, 'revisions_meta_box' ), null, 'normal', 'core' );
+			add_meta_box(
+				'revisionsdiv-wp-rev-ctl',
+				__(
+					'Revisions',
+					'wp_revisions_control'
+				),
+				array(
+					$this,
+					'revisions_meta_box',
+				),
+				null,
+				'normal',
+				'core'
+			);
 
 			// A bit of JS for us.
 			$handle = 'wp-revisions-control-post';
 			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __FILE__ ), array( 'jquery' ), '20131205', true );
-			wp_localize_script( $handle, $this->settings_section, array(
-				'namespace'       => $this->settings_section,
-				'action_base'     => $this->settings_section,
-				'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
-				'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp_revisions_control' ),
-				'autosave'        => __( 'Autosave', 'wp_revisions_control' ),
-				'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp_revisions_control' ) ),
-				'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' )
-			) );
+			wp_localize_script(
+				$handle,
+				$this->settings_section,
+				array(
+					'namespace'       => $this->settings_section,
+					'action_base'     => $this->settings_section,
+					'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
+					'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp_revisions_control' ),
+					'autosave'        => __( 'Autosave', 'wp_revisions_control' ),
+					'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp_revisions_control' ) ),
+					'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' ),
+				)
+			);
 
 			// Add some styling to our metabox additions.
 			add_action( 'admin_head', array( $this, 'action_admin_head' ), 999 );
@@ -295,7 +325,16 @@ class WP_Revisions_Control {
 			<p class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></p>
 
 			<p>
-				<?php printf( __( 'Limit this post to %s revisions. Leave this field blank for default behavior.', 'wp_revisions_control' ), '<input type="text" name="' . $this->settings_section . '_qty" value="' . $this->get_post_revisions_to_keep( $post->ID ) . '" id="' . $this->settings_section . '_qty" size="2" />' ); ?>
+				<?php
+				printf(
+					/* translators: 1. Text input field. */
+					esc_html__(
+						'Limit this post to %1$s revisions. Leave this field blank for default behavior.',
+						'wp_revisions_control'
+					),
+					'<input type="text" name="' . esc_attr( $this->settings_section ) . '_qty" value="' . (int) $this->get_post_revisions_to_keep( $post->ID ) . '" id="' . esc_attr( $this->settings_section ) . '_qty" size="2" />'
+				);
+				?>
 
 				<?php wp_nonce_field( $this->settings_section . '_limit', $this->settings_section . '_limit_nonce', false ); ?>
 			</p>
@@ -309,18 +348,19 @@ class WP_Revisions_Control {
 	public function ajax_purge() {
 		$post_id = isset( $_REQUEST['post_id'] ) ? (int) $_REQUEST['post_id'] : false;
 
-		// Hold the current state of this Ajax request
+		// Hold the current state of this Ajax request.
 		$response = array();
 
-		// Check for necessary data and capabilities
-		if ( ! $post_id )
+		// Check for necessary data and capabilities.
+		if ( ! $post_id ) {
 			$response['error'] = __( 'No post ID was provided. Please refresh the page and try again.', 'wp_revisions_control' );
-		elseif ( ! check_ajax_referer( $this->settings_section . '_purge', 'nonce', false ) )
+		} elseif ( ! check_ajax_referer( $this->settings_section . '_purge', 'nonce', false ) ) {
 			$response['error'] = __( 'Invalid request. Please refresh the page and try again.', 'wp_revisions_control' );
-		elseif ( ! current_user_can( 'edit_post', $post_id ) )
+		} elseif ( ! current_user_can( 'edit_post', $post_id ) ) {
 			$response['error'] = __( 'You are not allowed to edit this post.', 'wp_revisions_control' );
+		}
 
-		// Request is valid if $response is still empty, as no errors arose above
+		// Request is valid if $response is still empty, as no errors arose above.
 		if ( empty( $response ) ) {
 			$revisions = wp_get_post_revisions( $post_id );
 
@@ -330,11 +370,19 @@ class WP_Revisions_Control {
 				wp_delete_post_revision( $revision->ID );
 			}
 
-			$response['success'] = sprintf( __( 'Removed %s revisions associated with this post.', 'wp_revisions_control' ), number_format_i18n( $count, 0 ) );
+			$response['success'] = sprintf(
+				/* translators: 1. Number of removed revisions, already formatted for locale. */
+				esc_html__(
+					'Removed %1$s revisions associated with this post.',
+					'wp_revisions_control'
+				),
+				number_format_i18n( $count, 0 )
+			);
+
 			$response['count'] = $count;
 		}
 
-		// Pass the response back to JS
+		// Pass the response back to JS.
 		echo json_encode( $response );
 		exit;
 	}
@@ -345,13 +393,17 @@ class WP_Revisions_Control {
 	 * @param int $post_id Post ID.
 	 */
 	public function action_save_post( $post_id ) {
-		if ( isset( $_POST[ $this->settings_section . '_limit_nonce' ] ) && wp_verify_nonce( $_POST[ $this->settings_section . '_limit_nonce' ], $this->settings_section . '_limit' ) && isset( $_POST[ $this->settings_section . '_qty' ] ) ) {
-			$limit = $_POST[ $this->settings_section . '_qty' ];
+		$nonce = $this->settings_section . '_limit_nonce';
+		$qty   = $this->settings_section . '_qty';
 
-			if ( -1 == $limit || empty( $limit ) )
+		if ( isset( $_POST[ $nonce ], $_POST[ $qty ] ) && wp_verify_nonce( sanitize_text_field( $_POST[ $nonce ] ), $this->settings_section . '_limit' ) ) {
+			$limit = (int) $_POST[ $qty ];
+
+			if ( -1 === $limit || empty( $limit ) ) {
 				delete_post_meta( $post_id, $this->meta_key_limit );
-			else
+			} else {
 				update_post_meta( $post_id, $this->meta_key_limit, absint( $limit ) );
+			}
 		}
 	}
 
@@ -359,12 +411,12 @@ class WP_Revisions_Control {
 	 * Add a border between the regular revisions list and this plugin's additions.
 	 */
 	public function action_admin_head() {
-	?>
+		?>
 		<style type="text/css">
 			#revisionsdiv-wp-rev-ctl #<?php echo esc_attr( $this->settings_section ); ?> {
-				 border-top: 1px solid #dfdfdf;
-				 padding-top: 0;
-				 margin-top: 20px;
+				border-top: 1px solid #dfdfdf;
+				padding-top: 0;
+				margin-top: 20px;
 			}
 
 			#revisionsdiv-wp-rev-ctl #<?php echo esc_attr( $this->settings_section ); ?> h4 {
@@ -373,7 +425,7 @@ class WP_Revisions_Control {
 				margin-top: 0;
 			}
 		</style>
-	<?php
+		<?php
 	}
 
 	/**
@@ -391,13 +443,18 @@ class WP_Revisions_Control {
 
 			$settings = get_option( $this->settings_section, array() );
 
+			if ( ! is_array( $settings ) ) {
+				$settings = array();
+			}
+
 			$merged_settings = array();
 
 			foreach ( $post_types as $post_type => $name ) {
-				if ( array_key_exists( $post_type, $settings ) )
+				if ( array_key_exists( $post_type, $settings ) ) {
 					$merged_settings[ $post_type ] = (int) $settings[ $post_type ];
-				else
-					$merged_settings[ $post_type ] = -1;
+				} else {
+					$merged_settings[ $post_type ] = - 1;
+				}
 			}
 
 			self::$settings = $merged_settings;
@@ -413,16 +470,19 @@ class WP_Revisions_Control {
 	 */
 	private function get_post_types() {
 		if ( empty( self::$post_types ) ) {
-			$types = get_post_types();
-
-			foreach ( $types as $type ) {
+			foreach ( get_post_types() as $type ) {
 				if ( post_type_supports( $type, 'revisions' ) ) {
 					$object = get_post_type_object( $type );
 
-					if ( property_exists( $object, 'labels' ) && property_exists( $object->labels, 'name' ) )
+					if ( null === $object ) {
+						continue;
+					}
+
+					if ( property_exists( $object, 'labels' ) && property_exists( $object->labels, 'name' ) ) {
 						$name = $object->labels->name;
-					else
+					} else {
 						$name = $object->name;
+					}
 
 					self::$post_types[ $type ] = $name;
 				}
@@ -442,13 +502,14 @@ class WP_Revisions_Control {
 	private function get_revisions_to_keep( $post_type, $blank_for_all = false ) {
 		// wp_revisions_to_keep() accepts a post object, not just the post type.
 		// We construct a new WP_Post object to ensure anything hooked to the wp_revisions_to_keep filter has the same basic data WP provides.
-		$_post = new WP_Post( (object) array( 'post_type' => $post_type ) );
+		$_post   = new WP_Post( (object) array( 'post_type' => $post_type ) );
 		$to_keep = wp_revisions_to_keep( $_post );
 
-		if ( $blank_for_all && -1 == $to_keep )
+		if ( $blank_for_all && -1 === $to_keep ) {
 			return '';
-		else
+		} else {
 			return (int) $to_keep;
+		}
 	}
 
 	/**
@@ -460,10 +521,11 @@ class WP_Revisions_Control {
 	private function get_post_revisions_to_keep( $post_id ) {
 		$to_keep = get_post_meta( $post_id, $this->meta_key_limit, true );
 
-		if ( -1 == $to_keep || empty( $to_keep ) )
+		if ( -1 === $to_keep || empty( $to_keep ) ) {
 			$to_keep = '';
-		else
+		} else {
 			$to_keep = (int) $to_keep;
+		}
 
 		return $to_keep;
 	}
