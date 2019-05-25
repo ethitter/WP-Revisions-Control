@@ -290,7 +290,7 @@ class WP_Revisions_Control {
 
 			// A bit of JS for us.
 			$handle = 'wp-revisions-control-post';
-			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __FILE__ ), array( 'jquery' ), '20131205', true );
+			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __DIR__ ), array( 'jquery' ), '20131205', true );
 			wp_localize_script(
 				$handle,
 				$this->settings_section,
