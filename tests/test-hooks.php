@@ -73,7 +73,7 @@ class TestHooks extends WP_UnitTestCase {
 		for ( $i = 0; $i < $iterations; $i++ ) {
 			wp_update_post(
 				[
-					'ID' => $post_id,
+					'ID'           => $post_id,
 					'post_content' => wp_rand(),
 				]
 			);
