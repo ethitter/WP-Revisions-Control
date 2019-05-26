@@ -27,7 +27,7 @@ class TestUI extends WP_UnitTestCase {
 	 * Test meta box with no meta set.
 	 */
 	public function test_no_meta() {
-		$post_id    = $this->factory->post->create();
+		$post_id = $this->factory->post->create();
 
 		ob_start();
 		WP_Revisions_Control::get_instance()->revisions_meta_box( get_post( $post_id ) );
@@ -44,7 +44,7 @@ class TestUI extends WP_UnitTestCase {
 	 * Test meta box with no limit set.
 	 */
 	public function test_no_limit() {
-		$post_id    = $this->factory->post->create();
+		$post_id = $this->factory->post->create();
 		update_post_meta( $post_id, static::$meta_key, -1 );
 
 		ob_start();

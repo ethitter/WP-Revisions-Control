@@ -39,7 +39,7 @@ class TestPurges extends WP_UnitTestCase {
 			'Failed to assert that there are revisions to purge.'
 		);
 
-		$purge = WP_Revisions_Control::get_instance()->do_purge_all( $post_id );
+		$purge               = WP_Revisions_Control::get_instance()->do_purge_all( $post_id );
 		$revisions_remaining = count( wp_get_post_revisions( $post_id ) );
 
 		$this->assertEquals(
@@ -93,7 +93,7 @@ class TestPurges extends WP_UnitTestCase {
 			'Failed to assert that post is limited to a given number of revisions.'
 		);
 
-		$purge = WP_Revisions_Control::get_instance()->do_purge_excess( $post_id );
+		$purge               = WP_Revisions_Control::get_instance()->do_purge_excess( $post_id );
 		$revisions_remaining = count( wp_get_post_revisions( $post_id ) );
 
 		$this->assertEquals(
