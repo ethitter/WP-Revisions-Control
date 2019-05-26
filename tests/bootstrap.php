@@ -37,7 +37,7 @@ if ( ! function_exists( 'post_revisions_meta_box' ) ) {
 function wp_revisions_control_tests_manually_load_plugin() {
 	require dirname( dirname( __FILE__ ) ) . '/wp-revisions-control.php';
 }
-tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
+tests_add_filter( 'muplugins_loaded', 'wp_revisions_control_tests_manually_load_plugin' );
 
 // Start up the WP testing environment.
 require $wp_revisions_control_tests_tests_dir . '/includes/bootstrap.php';
