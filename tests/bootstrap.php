@@ -20,6 +20,13 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 require_once $_tests_dir . '/includes/functions.php';
 
 /**
+ * Stub admin-only function not needed for testing.
+ */
+if ( ! function_exists( 'post_revisions_meta_box' ) ) {
+	function post_revisions_meta_box() {}
+}
+
+/**
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {

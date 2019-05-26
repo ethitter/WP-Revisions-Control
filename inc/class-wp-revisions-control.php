@@ -505,10 +505,12 @@ class WP_Revisions_Control {
 	 * @return array
 	 */
 	private function get_settings() {
-		if ( empty( self::$settings ) ) {
-			$post_types = $this->get_post_types();
+		static $hash = null;
 
-			$settings = get_option( $this->settings_section, array() );
+		$settings = get_option( $this->settings_section, array() );
+
+		if ( empty( self::$settings ) || $hash !== $this->hash_settings( $settings ) ) {
+			$post_types = $this->get_post_types();
 
 			if ( ! is_array( $settings ) ) {
 				$settings = array();
@@ -525,9 +527,21 @@ class WP_Revisions_Control {
 			}
 
 			self::$settings = $merged_settings;
+			$hash           = $this->hash_settings( self::$settings );
 		}
 
 		return self::$settings;
+	}
+
+	/**
+	 * Hash settings to limit re-parsing.
+	 *
+	 * @param array $settings Settings array.
+	 * @return string
+	 */
+	private function hash_settings( $settings ) {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+		return md5( serialize( $settings ) );
 	}
 
 	/**
@@ -572,7 +586,7 @@ class WP_Revisions_Control {
 		$_post   = new WP_Post( (object) array( 'post_type' => $post_type ) );
 		$to_keep = wp_revisions_to_keep( $_post );
 
-		if ( $blank_for_all && -1 === $to_keep ) {
+		if ( $blank_for_all && ( -1 === $to_keep || '-1' === $to_keep ) ) {
 			return '';
 		} else {
 			return (int) $to_keep;
@@ -588,7 +602,7 @@ class WP_Revisions_Control {
 	private function get_post_revisions_to_keep( $post_id ) {
 		$to_keep = get_post_meta( $post_id, $this->meta_key_limit, true );
 
-		if ( -1 === $to_keep || empty( $to_keep ) ) {
+		if ( empty( $to_keep ) || -1 === $to_keep || '-1' === $to_keep ) {
 			$to_keep = '';
 		} else {
 			$to_keep = (int) $to_keep;

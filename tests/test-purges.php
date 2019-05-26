@@ -10,13 +10,6 @@
  */
 class TestPurges extends WP_UnitTestCase {
 	/**
-	 * Plugin slug used in many settings etc.
-	 *
-	 * @var string
-	 */
-	protected static $settings_section = 'wp_revisions_control';
-
-	/**
 	 * Plugin's limit meta key.
 	 *
 	 * @var string
