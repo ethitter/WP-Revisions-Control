@@ -125,12 +125,14 @@ class WP_Revisions_Control {
 	 * Plugin title is intentionally not translatable.
 	 */
 	public function action_admin_init() {
+		$post_types = $this->get_post_types();
+
 		// Plugin setting section.
 		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
 
 		add_settings_section( $this->settings_section, 'WP Revisions Control', array( $this, 'settings_section_intro' ), $this->settings_page );
 
-		foreach ( $this->get_post_types() as $post_type => $name ) {
+		foreach ( $post_types as $post_type => $name ) {
 			add_settings_field( $this->settings_section . '-' . $post_type, $name, array( $this, 'field_post_type' ), $this->settings_page, $this->settings_section, array( 'post_type' => $post_type ) );
 		}
 
@@ -138,6 +140,9 @@ class WP_Revisions_Control {
 		add_action( 'add_meta_boxes', array( $this, 'action_add_meta_boxes' ), 10, 2 );
 		add_action( 'wp_ajax_' . $this->settings_section . '_purge', array( $this, 'ajax_purge' ) );
 		add_action( 'save_post', array( $this, 'action_save_post' ) );
+
+		// Bulk actions.
+		new WP_Revisions_Control_Bulk_Actions( $post_types );
 	}
 
 	/**
