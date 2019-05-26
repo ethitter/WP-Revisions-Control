@@ -114,9 +114,9 @@ class TestUI extends WP_UnitTestCase {
 
 		update_option(
 			static::$settings_section,
-			[
+			array(
 				'post' => $value,
-			]
+			)
 		);
 
 		ob_start();
@@ -154,9 +154,9 @@ class TestUI extends WP_UnitTestCase {
 
 		update_option(
 			static::$settings_section,
-			[
+			array(
 				'post' => $value,
-			]
+			)
 		);
 
 		ob_start();
@@ -177,10 +177,7 @@ class TestUI extends WP_UnitTestCase {
 		);
 
 		$this->assertContains(
-			sprintf(
-				$value_format,
-				$value
-			),
+			$value_format,
 			$post_field,
 			'Failed to assert that post field had correct value.'
 		);
