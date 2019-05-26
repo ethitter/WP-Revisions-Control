@@ -81,8 +81,15 @@ class WP_Revisions_Control_Bulk_Actions {
 	protected function register_actions() {
 		$actions = array();
 
-		$actions[ $this->action_base . 'purge_excess' ] = __( 'Purge excess revisions', 'wp_revisions_control' );
-		$actions[ $this->action_base . 'purge_all' ]    = __( 'Purge ALL revisions', 'wp_revisions_control' );
+		$actions[ $this->action_base . 'purge_excess' ] = __(
+			'Purge excess revisions',
+			'wp_revisions_control'
+		);
+
+		$actions[ $this->action_base . 'purge_all' ] = __(
+			'Purge ALL revisions',
+			'wp_revisions_control'
+		);
 
 		$this->actions = $actions;
 	}
@@ -104,9 +111,11 @@ class WP_Revisions_Control_Bulk_Actions {
 		}
 
 		$post_type_caps = get_post_type_object( $screen->post_type )->cap;
-		$user_can       = current_user_can( $post_type_caps->edit_posts ) &&
-						current_user_can( $post_type_caps->edit_published_posts ) &&
-						current_user_can( $post_type_caps->edit_others_posts );
+		$user_can       = (
+			current_user_can( $post_type_caps->edit_posts ) &&
+			current_user_can( $post_type_caps->edit_published_posts ) &&
+			current_user_can( $post_type_caps->edit_others_posts )
+		);
 		$user_can       = apply_filters(
 			'wp_revisions_control_current_user_can_bulk_actions',
 			$user_can,
@@ -144,6 +153,7 @@ class WP_Revisions_Control_Bulk_Actions {
 	protected function get_message_query_args() {
 		$args   = array_keys( $this->actions );
 		$args[] = $this->action_base . 'missing';
+		$args[] = $this->action_base . 'nonce';
 
 		return $args;
 	}
@@ -184,13 +194,17 @@ class WP_Revisions_Control_Bulk_Actions {
 				$response[ $action ] = 1;
 				break;
 
+			case 'nonce':
+				break;
+
 			default:
 				$response[ $this->action_base . 'missing' ] = 1;
 				break;
 		}
 
 		if ( is_array( $response ) ) {
-			$redirect_to = add_query_arg( $response, $redirect_to );
+			$response[ $this->action_base . 'nonce' ] = wp_create_nonce( $this->action_base );
+			$redirect_to                              = add_query_arg( $response, $redirect_to );
 		}
 
 		return $redirect_to;
@@ -202,8 +216,10 @@ class WP_Revisions_Control_Bulk_Actions {
 	 * @param array $ids Object IDs.
 	 */
 	protected function purge_all( $ids ) {
+		$plugin = WP_Revisions_Control::get_instance();
+
 		foreach ( $ids as $id ) {
-			WP_Revisions_Control::get_instance()->do_purge_all( $id );
+			$plugin->do_purge_all( $id );
 		}
 	}
 
@@ -213,8 +229,10 @@ class WP_Revisions_Control_Bulk_Actions {
 	 * @param array $ids Object IDs.
 	 */
 	protected function purge_excess( $ids ) {
+		$plugin = WP_Revisions_Control::get_instance();
+
 		foreach ( $ids as $id ) {
-			WP_Revisions_Control::get_instance()->do_purge_excess( $id );
+			$plugin->do_purge_excess( $id );
 		}
 	}
 
@@ -224,8 +242,16 @@ class WP_Revisions_Control_Bulk_Actions {
 	public function admin_notices() {
 		$message = null;
 
+		$nonce_key = $this->action_base . 'nonce';
+
+		if (
+			! isset( $_GET[ $nonce_key ] ) ||
+			! wp_verify_nonce( sanitize_text_field( $_GET[ $nonce_key ] ), $this->action_base )
+		) {
+			return;
+		}
+
 		foreach ( $this->get_message_query_args() as $arg ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			if ( isset( $_GET[ $arg ] ) && 1 === (int) $_GET[ $arg ] ) {
 				$message = $arg;
 				break;
@@ -253,6 +279,9 @@ class WP_Revisions_Control_Bulk_Actions {
 				);
 				break;
 
+			case 'nonce':
+				break;
+
 			default:
 			case 'missing':
 				$message = __(
@@ -261,6 +290,10 @@ class WP_Revisions_Control_Bulk_Actions {
 				);
 				$type    = 'error';
 				break;
+		}
+
+		if ( ! isset( $message, $type ) ) {
+			return;
 		}
 
 		?>
