@@ -44,6 +44,7 @@ class WP_Revisions_Control_Bulk_Actions {
 		$this->register_actions();
 
 		add_action( 'load-edit.php', array( $this, 'setup' ) );
+		add_filter( 'removable_query_args', array( $this, 'remove_message_query_args' ) );
 	}
 
 	/**
@@ -80,7 +81,29 @@ class WP_Revisions_Control_Bulk_Actions {
 
 		add_filter( 'bulk_actions-' . $screen->id, array( $this, 'add_actions' ) );
 		add_filter( 'handle_bulk_actions-' . $screen->id, array( $this, 'handle_action' ), 10, 3 );
-		// TODO: messages.
+		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+	}
+
+	/**
+	 * Remove message query arguments to prevent re-display.
+	 *
+	 * @param array $args Array of query variables to remove from URL.
+	 * @return array
+	 */
+	public function remove_message_query_args( $args ) {
+		return array_merge( $args, $this->get_message_query_args() );
+	}
+
+	/**
+	 * Return array of supported query args that trigger admin notices.
+	 *
+	 * @return array
+	 */
+	protected function get_message_query_args() {
+		$args   = array_keys( $this->actions );
+		$args[] = $this->action_base . 'missing';
+
+		return $args;
 	}
 
 	/**
@@ -106,9 +129,11 @@ class WP_Revisions_Control_Bulk_Actions {
 			return $redirect_to;
 		}
 
-		$action = str_replace( $this->action_base, '', $action );
+		$response = array(
+			$action => 1,
+		);
 
-		switch ( $action ) {
+		switch ( str_replace( $this->action_base, '', $action ) ) {
 			case 'purge_all':
 				$this->purge_all( $ids );
 				break;
@@ -118,10 +143,16 @@ class WP_Revisions_Control_Bulk_Actions {
 				break;
 
 			default:
+				$response = array(
+					$this->action_base . 'missing' => 1,
+				);
 				break;
 		}
 
-		// TODO: implement and add a query string to trigger a message.
+		if ( is_array( $response ) ) {
+			$redirect_to = add_query_arg( $response, $redirect_to );
+		}
+
 		return $redirect_to;
 	}
 
@@ -145,5 +176,57 @@ class WP_Revisions_Control_Bulk_Actions {
 		foreach ( $ids as $id ) {
 			WP_Revisions_Control::get_instance()->do_purge_excess( $id );
 		}
+	}
+
+	/**
+	 * Render admin notices.
+	 */
+	public function admin_notices() {
+		$message = null;
+
+		foreach ( $this->get_message_query_args() as $arg ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( isset( $_GET[ $arg ] ) ) {
+				$message = $arg;
+				break;
+			}
+		}
+
+		if ( null === $message ) {
+			return;
+		}
+
+		$type = 'updated';
+
+		switch ( str_replace( $this->action_base, '', $message ) ) {
+			case 'purge_all':
+				$message = __(
+					'Purged all revisions.',
+					'wp_revisions_control'
+				);
+				break;
+
+			case 'purge_excess':
+				$message = __(
+					'Purged excess revisions.',
+					'wp_revisions_control'
+				);
+				break;
+
+			default:
+			case 'missing':
+				$message = __(
+					'WP Revisions Control encountered an unspecified error.',
+					'wp_revisions_control'
+				);
+				$type    = 'error';
+				break;
+		}
+
+		?>
+		<div class="notice is-dismissible <?php echo esc_attr( $type ); ?>">
+			<p><?php echo esc_html( $message ); ?></p>
+		</div>
+		<?php
 	}
 }
