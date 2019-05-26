@@ -411,6 +411,50 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Remove any revisions in excess of a post's limit.
+	 *
+	 * @param int $post_id Post ID to purge of excess revisions.
+	 * @return array
+	 */
+	public function do_purge_excess( $post_id ) {
+		$response = array(
+			'count' => 0,
+		);
+
+		$to_keep = wp_revisions_to_keep( get_post( $post_id ) );
+
+		if ( $to_keep < 0 ) {
+			$response['success'] = __(
+				'No revisions to remove.',
+				'wp_revisions_control'
+			);
+
+			return $response;
+		}
+
+		$revisions      = wp_get_post_revisions( $post_id );
+		$starting_count = count( $revisions );
+
+		if ( $starting_count <= $to_keep ) {
+			$response['success'] = __(
+				'No revisions to remove.',
+				'wp_revisions_control'
+			);
+
+			return $response;
+		}
+
+		$to_remove         = array_slice( $revisions, $to_keep, null, true );
+		$response['count'] = count( $to_remove );
+
+		foreach ( $to_remove as $revision ) {
+			wp_delete_post_revision( $revision->ID );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Sanitize and store post-specifiy revisions quantity.
 	 *
 	 * @param int $post_id Post ID.
