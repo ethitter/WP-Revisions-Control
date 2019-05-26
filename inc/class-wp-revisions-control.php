@@ -103,7 +103,11 @@ class WP_Revisions_Control {
 	 * Load plugin translations.
 	 */
 	public function action_plugins_loaded() {
-		load_plugin_textdomain( 'wp_revisions_control', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain(
+			'wp_revisions_control',
+			false,
+			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
+		);
 	}
 
 	/**
