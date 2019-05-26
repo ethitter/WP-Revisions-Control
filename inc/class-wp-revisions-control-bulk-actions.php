@@ -10,6 +10,13 @@
  */
 class WP_Revisions_Control_Bulk_Actions {
 	/**
+	 * Singleton.
+	 *
+	 * @var static
+	 */
+	private static $__instance;
+
+	/**
 	 * Supported post types.
 	 *
 	 * @var array
@@ -31,11 +38,32 @@ class WP_Revisions_Control_Bulk_Actions {
 	protected $actions;
 
 	/**
-	 * Constructor.
+	 * Silence is golden!
+	 */
+	private function __construct() {}
+
+	/**
+	 * Singleton implementation.
+	 *
+	 * @param array $post_types Supported post types, used only on instantiation.
+	 * @return static
+	 */
+	public static function get_instance( $post_types = array() ) {
+		if ( ! is_a( static::$__instance, __CLASS__ ) ) {
+			static::$__instance = new self();
+
+			static::$__instance->setup( $post_types );
+		}
+
+		return static::$__instance;
+	}
+
+	/**
+	 * One-time actions.
 	 *
 	 * @param array $post_types Supported post types.
 	 */
-	public function __construct( $post_types ) {
+	public function setup( $post_types ) {
 		if ( empty( $post_types ) || ! is_array( $post_types ) ) {
 			return;
 		}
@@ -43,7 +71,7 @@ class WP_Revisions_Control_Bulk_Actions {
 		$this->post_types = $post_types;
 		$this->register_actions();
 
-		add_action( 'load-edit.php', array( $this, 'setup' ) );
+		add_action( 'load-edit.php', array( $this, 'register_admin_hooks' ) );
 		add_filter( 'removable_query_args', array( $this, 'remove_message_query_args' ) );
 	}
 
@@ -62,7 +90,7 @@ class WP_Revisions_Control_Bulk_Actions {
 	/**
 	 * Register various hooks.
 	 */
-	public function setup() {
+	public function register_admin_hooks() {
 		$screen = get_current_screen();
 
 		if ( null === $screen ) {
@@ -129,23 +157,21 @@ class WP_Revisions_Control_Bulk_Actions {
 			return $redirect_to;
 		}
 
-		$response = array(
-			$action => 1,
-		);
+		$response = array_fill_keys( $this->get_message_query_args(), 0 );
 
 		switch ( str_replace( $this->action_base, '', $action ) ) {
 			case 'purge_all':
 				$this->purge_all( $ids );
+				$response[ $action ] = 1;
 				break;
 
 			case 'purge_excess':
 				$this->purge_excess( $ids );
+				$response[ $action ] = 1;
 				break;
 
 			default:
-				$response = array(
-					$this->action_base . 'missing' => 1,
-				);
+				$response[ $this->action_base . 'missing' ] = 1;
 				break;
 		}
 
@@ -186,7 +212,7 @@ class WP_Revisions_Control_Bulk_Actions {
 
 		foreach ( $this->get_message_query_args() as $arg ) {
 			// phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			if ( isset( $_GET[ $arg ] ) ) {
+			if ( isset( $_GET[ $arg ] ) && 1 === (int) $_GET[ $arg ] ) {
 				$message = $arg;
 				break;
 			}
