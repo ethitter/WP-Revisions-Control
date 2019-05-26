@@ -362,29 +362,43 @@ class WP_Revisions_Control {
 
 		// Request is valid if $response is still empty, as no errors arose above.
 		if ( empty( $response ) ) {
-			$revisions = wp_get_post_revisions( $post_id );
-
-			$count = count( $revisions );
-
-			foreach ( $revisions as $revision ) {
-				wp_delete_post_revision( $revision->ID );
-			}
-
-			$response['success'] = sprintf(
-				/* translators: 1. Number of removed revisions, already formatted for locale. */
-				esc_html__(
-					'Removed %1$s revisions associated with this post.',
-					'wp_revisions_control'
-				),
-				number_format_i18n( $count, 0 )
-			);
-
-			$response['count'] = $count;
+			$response = $this->do_purge_all( $post_id );
 		}
 
 		// Pass the response back to JS.
 		echo json_encode( $response );
 		exit;
+	}
+
+	/**
+	 * Remove all revisions from a given post ID.
+	 *
+	 * @param int $post_id Post ID to purge of revisions.
+	 * @return array
+	 */
+	public function do_purge_all( $post_id ) {
+		$response = array();
+
+		$revisions = wp_get_post_revisions( $post_id );
+
+		$count = count( $revisions );
+
+		foreach ( $revisions as $revision ) {
+			wp_delete_post_revision( $revision->ID );
+		}
+
+		$response['success'] = sprintf(
+			/* translators: 1. Number of removed revisions, already formatted for locale. */
+			esc_html__(
+				'Removed %1$s revisions associated with this post.',
+				'wp_revisions_control'
+			),
+			number_format_i18n( $count, 0 )
+		);
+
+		$response['count'] = $count;
+
+		return $response;
 	}
 
 	/**
