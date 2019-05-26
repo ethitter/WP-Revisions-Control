@@ -103,6 +103,20 @@ class WP_Revisions_Control_Bulk_Actions {
 			return;
 		}
 
+		$post_type_caps = get_post_type_object( $screen->post_type )->cap;
+		$user_can       = current_user_can( $post_type_caps->edit_posts ) &&
+						current_user_can( $post_type_caps->edit_published_posts ) &&
+						current_user_can( $post_type_caps->edit_others_posts );
+		$user_can       = apply_filters(
+			'wp_revisions_control_current_user_can_bulk_actions',
+			$user_can,
+			$screen->post_type
+		);
+
+		if ( ! $user_can ) {
+			return;
+		}
+
 		if ( 'edit' !== $screen->base ) {
 			return;
 		}
