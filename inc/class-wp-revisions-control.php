@@ -341,7 +341,7 @@ class WP_Revisions_Control {
 						'Limit this post to %1$s revisions. Leave this field blank for default behavior.',
 						'wp_revisions_control'
 					),
-					'<input type="text" name="' . esc_attr( $this->settings_section ) . '_qty" value="' . (int) $this->get_post_revisions_to_keep( $post->ID ) . '" id="' . esc_attr( $this->settings_section ) . '_qty" size="2" />'
+					'<input type="text" name="' . esc_attr( $this->settings_section ) . '_qty" value="' . esc_attr( $this->get_post_revisions_to_keep( $post->ID ) ) . '" id="' . esc_attr( $this->settings_section ) . '_qty" size="2" />'
 				);
 				?>
 
