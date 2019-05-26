@@ -62,49 +62,4 @@ class TestHooks extends WP_UnitTestCase {
 			wp_revisions_to_keep( get_post( $post_id_unlimited ) )
 		);
 	}
-
-	/**
-	 * Test revision purging.
-	 */
-	public function test_purge_all() {
-		$post_id    = $this->factory->post->create();
-		$iterations = 10;
-
-		for ( $i = 0; $i < $iterations; $i++ ) {
-			wp_update_post(
-				array(
-					'ID'           => $post_id,
-					'post_content' => wp_rand(),
-				)
-			);
-		}
-
-		$revisions_to_purge = count( wp_get_post_revisions( $post_id ) );
-		$this->assertEquals(
-			$iterations,
-			$revisions_to_purge,
-			'Failed to assert that there are revisions to purge.'
-		);
-
-		$purge = WP_Revisions_Control::get_instance()->do_purge_all( $post_id );
-		$revisions_remaining = count( wp_get_post_revisions( $post_id ) );
-
-		$this->assertEquals(
-			0,
-			$revisions_remaining,
-			'Failed to assert that all revisions were purged.'
-		);
-
-		$this->assertEquals(
-			10,
-			$purge['count'],
-			'Failed to assert that response includes expected count of purged revisions.'
-		);
-
-		$this->assertEquals(
-			'Removed 10 revisions associated with this post.',
-			$purge['success'],
-			'Failed to assert that response includes expected success message.'
-		);
-	}
 }
