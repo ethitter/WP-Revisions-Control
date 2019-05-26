@@ -36,6 +36,7 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 == Changelog ==
 
 = 1.3 =
+* Add bulk actions to purge excess or all revisions.
 * Introduce unit tests.
 * Conform to coding standards.
 
@@ -49,6 +50,9 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 * Initial public release
 
 == Upgrade Notice ==
+
+= 1.3 =
+Introduces bulk actions for purging revisions, along with unit tests. The plugin also conforms to coding standards.
 
 = 1.2.1 =
 Introduces Spanish translation thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/).

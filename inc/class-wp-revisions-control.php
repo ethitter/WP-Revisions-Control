@@ -103,7 +103,11 @@ class WP_Revisions_Control {
 	 * Load plugin translations.
 	 */
 	public function action_plugins_loaded() {
-		load_plugin_textdomain( 'wp_revisions_control', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+		load_plugin_textdomain(
+			'wp_revisions_control',
+			false,
+			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
+		);
 	}
 
 	/**
@@ -121,12 +125,14 @@ class WP_Revisions_Control {
 	 * Plugin title is intentionally not translatable.
 	 */
 	public function action_admin_init() {
+		$post_types = $this->get_post_types();
+
 		// Plugin setting section.
 		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
 
 		add_settings_section( $this->settings_section, 'WP Revisions Control', array( $this, 'settings_section_intro' ), $this->settings_page );
 
-		foreach ( $this->get_post_types() as $post_type => $name ) {
+		foreach ( $post_types as $post_type => $name ) {
 			add_settings_field( $this->settings_section . '-' . $post_type, $name, array( $this, 'field_post_type' ), $this->settings_page, $this->settings_section, array( 'post_type' => $post_type ) );
 		}
 
@@ -134,6 +140,9 @@ class WP_Revisions_Control {
 		add_action( 'add_meta_boxes', array( $this, 'action_add_meta_boxes' ), 10, 2 );
 		add_action( 'wp_ajax_' . $this->settings_section . '_purge', array( $this, 'ajax_purge' ) );
 		add_action( 'save_post', array( $this, 'action_save_post' ) );
+
+		// Bulk actions.
+		WP_Revisions_Control_Bulk_Actions::get_instance( $post_types );
 	}
 
 	/**
@@ -332,7 +341,7 @@ class WP_Revisions_Control {
 						'Limit this post to %1$s revisions. Leave this field blank for default behavior.',
 						'wp_revisions_control'
 					),
-					'<input type="text" name="' . esc_attr( $this->settings_section ) . '_qty" value="' . (int) $this->get_post_revisions_to_keep( $post->ID ) . '" id="' . esc_attr( $this->settings_section ) . '_qty" size="2" />'
+					'<input type="text" name="' . esc_attr( $this->settings_section ) . '_qty" value="' . esc_attr( $this->get_post_revisions_to_keep( $post->ID ) ) . '" id="' . esc_attr( $this->settings_section ) . '_qty" size="2" />'
 				);
 				?>
 
@@ -402,6 +411,50 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Remove any revisions in excess of a post's limit.
+	 *
+	 * @param int $post_id Post ID to purge of excess revisions.
+	 * @return array
+	 */
+	public function do_purge_excess( $post_id ) {
+		$response = array(
+			'count' => 0,
+		);
+
+		$to_keep = wp_revisions_to_keep( get_post( $post_id ) );
+
+		if ( $to_keep < 0 ) {
+			$response['success'] = __(
+				'No revisions to remove.',
+				'wp_revisions_control'
+			);
+
+			return $response;
+		}
+
+		$revisions      = wp_get_post_revisions( $post_id );
+		$starting_count = count( $revisions );
+
+		if ( $starting_count <= $to_keep ) {
+			$response['success'] = __(
+				'No revisions to remove.',
+				'wp_revisions_control'
+			);
+
+			return $response;
+		}
+
+		$to_remove         = array_slice( $revisions, $to_keep, null, true );
+		$response['count'] = count( $to_remove );
+
+		foreach ( $to_remove as $revision ) {
+			wp_delete_post_revision( $revision->ID );
+		}
+
+		return $response;
+	}
+
+	/**
 	 * Sanitize and store post-specifiy revisions quantity.
 	 *
 	 * @param int $post_id Post ID.
@@ -452,10 +505,12 @@ class WP_Revisions_Control {
 	 * @return array
 	 */
 	private function get_settings() {
-		if ( empty( self::$settings ) ) {
-			$post_types = $this->get_post_types();
+		static $hash = null;
 
-			$settings = get_option( $this->settings_section, array() );
+		$settings = get_option( $this->settings_section, array() );
+
+		if ( empty( self::$settings ) || $hash !== $this->hash_settings( $settings ) ) {
+			$post_types = $this->get_post_types();
 
 			if ( ! is_array( $settings ) ) {
 				$settings = array();
@@ -472,9 +527,21 @@ class WP_Revisions_Control {
 			}
 
 			self::$settings = $merged_settings;
+			$hash           = $this->hash_settings( self::$settings );
 		}
 
 		return self::$settings;
+	}
+
+	/**
+	 * Hash settings to limit re-parsing.
+	 *
+	 * @param array $settings Settings array.
+	 * @return string
+	 */
+	private function hash_settings( $settings ) {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+		return md5( serialize( $settings ) );
 	}
 
 	/**
@@ -519,7 +586,7 @@ class WP_Revisions_Control {
 		$_post   = new WP_Post( (object) array( 'post_type' => $post_type ) );
 		$to_keep = wp_revisions_to_keep( $_post );
 
-		if ( $blank_for_all && -1 === $to_keep ) {
+		if ( $blank_for_all && ( -1 === $to_keep || '-1' === $to_keep ) ) {
 			return '';
 		} else {
 			return (int) $to_keep;
@@ -535,7 +602,7 @@ class WP_Revisions_Control {
 	private function get_post_revisions_to_keep( $post_id ) {
 		$to_keep = get_post_meta( $post_id, $this->meta_key_limit, true );
 
-		if ( -1 === $to_keep || empty( $to_keep ) ) {
+		if ( empty( $to_keep ) || -1 === $to_keep || '-1' === $to_keep ) {
 			$to_keep = '';
 		} else {
 			$to_keep = (int) $to_keep;
