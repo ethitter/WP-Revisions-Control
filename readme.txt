@@ -20,7 +20,7 @@ Why is this helpful? Revisions are stored in the database, and if many are store
 
 Thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/), the plugin is also available in Spanish. Many thanks to her for her efforts!
 
-**Development is over on GitHub: https://github.com/ethitter/WP-Revisions-Control.**
+**Development is at https://git.ethitter.com/wp-plugins/wp-revisions-control.**
 
 == Installation ==
 
