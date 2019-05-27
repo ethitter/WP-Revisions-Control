@@ -1,0 +1,113 @@
+# Copyright (C) 2013 WP Revisions Control
+# This file is distributed under the same license as the WP Revisions Control package.
+msgid ""
+msgstr ""
+"Project-Id-Version: WP Revisions Control 1.2.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/wp-revisions-control\n"
+"POT-Creation-Date: 2015-07-30 19:57+0200\n"
+"PO-Revision-Date: 2015-07-30 19:57+0200\n"
+"Last-Translator: Maciej Gryniuk <maciejka45@gmail.com>\n"
+"Language-Team: \n"
+"Language: pl_PL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.3\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n"
+"%100>=20) ? 1 : 2);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#: wp-revisions-control.php:148
+msgid ""
+"Set the number of revisions to save for each post type listed. To retain all "
+"revisions for a given post type, leave the field empty."
+msgstr ""
+"Ustal ilość przechowywanych rewizji dla każdego wyświetlonego rodzaju wpisów. Aby "
+"zachować wszystkie rewizje dla danego rodzaju wpisów, pozostaw pole puste."
+
+#: wp-revisions-control.php:149
+msgid "If a post type isn't listed, revisions are not enabled for that post type."
+msgstr ""
+"Jeżeli rodzaj wpisów nie jest wyświeltony poniżej, nie posiada on włączonych "
+"rewizji."
+
+#: wp-revisions-control.php:155
+msgid ""
+"A local change is causing this plugin's functionality to run at a priority other "
+"than the default. If you experience difficulties with the plugin, please unhook any "
+"functions from the %s filter."
+msgstr ""
+"Lokalna zmiana wymusza uruchomienie funkcjonalności wtyczki na innym priorytecie "
+"niż domyślny. Jeżeli doświadczasz trudności z wtyczką, proszę odczepić wszystkie "
+"funkcje od filtra %s."
+
+#: wp-revisions-control.php:274
+msgid "Revisions"
+msgstr "Rewizje"
+
+#: wp-revisions-control.php:282
+msgid "Processing&hellip;"
+msgstr "Przetwarzanie&hellip;"
+
+#: wp-revisions-control.php:283
+msgid "Are you sure you want to remove revisions from this post?"
+msgstr "Na pewno chcesz usunąć rewizje z tego wpisu?"
+
+#: wp-revisions-control.php:284
+msgid "Autosave"
+msgstr "Automatyczny zapis"
+
+#: wp-revisions-control.php:285
+msgid "There are no revisions to remove."
+msgstr "Brak rewizji do usunięcia."
+
+#: wp-revisions-control.php:286
+msgid "An error occurred. Please refresh the page and try again."
+msgstr "Wystąpił błąd. Proszę odświeżyć stronę i spróbować ponownie."
+
+#: wp-revisions-control.php:312
+msgid "Purge these revisions"
+msgstr "Usuń te rewizje"
+
+#: wp-revisions-control.php:315
+msgid "Limit this post to %s revisions. Leave this field blank for default behavior."
+msgstr "Ogranicz ten wpis do %s rewizji. Pozostaw puste dla domyślnego ograniczenia."
+
+#: wp-revisions-control.php:341
+msgid "No post ID was provided. Please refresh the page and try again."
+msgstr "Nie podano ID wpisu. Proszę odświeżyć stronę i spróbować ponownie."
+
+#: wp-revisions-control.php:343
+msgid "Invalid request. Please refresh the page and try again."
+msgstr "Nieprawidłowe żądanie. Proszę odświeżyć stronę i spróbować ponownie."
+
+#: wp-revisions-control.php:345
+msgid "You are not allowed to edit this post."
+msgstr "Nie możesz edytować wpisów."
+
+#: wp-revisions-control.php:357
+msgid "Removed %s revision associated with this post."
+msgid_plural "Removed %s revisions associated with this post."
+msgstr[0] "Usunięto %s rewizję tego wpisu."
+msgstr[1] "Usunięto %s rewizje tego wpisu."
+msgstr[2] "Usunięto %s rewizji tego wpisu."
+
+#. Plugin Name of the plugin/theme
+msgid "WP Revisions Control"
+msgstr "WP Kontrola rewizji"
+
+#. Plugin URI of the plugin/theme
+msgid "http://www.ethitter.com/plugins/wp-revisions-control/"
+msgstr "http://www.ethitter.com/plugins/wp-revisions-control/"
+
+#. Description of the plugin/theme
+msgid "Control how many revisions are stored for each post type"
+msgstr "Kontroluj ilość przechowywanych rewizji dla każdego rodzaju wpisów"
+
+#. Author of the plugin/theme
+msgid "Erick Hitter"
+msgstr "Erick Hitter"
+
+#. Author URI of the plugin/theme
+msgid "http://www.ethitter.com/"
+msgstr "http://www.ethitter.com/"
