@@ -275,48 +275,55 @@ class WP_Revisions_Control {
 	/**
 	 * Override Core's revisions metabox.
 	 *
-	 * @param string $post_type Post type.
-	 * @param object $post      Post object.
+	 * @param string   $post_type Post type.
+	 * @param \WP_Post $post      Post object.
 	 */
 	public function action_add_meta_boxes( $post_type, $post ) {
-		if ( post_type_supports( $post_type, 'revisions' ) && 'auto-draft' !== get_post_status() && count( wp_get_post_revisions( $post ) ) > 1 ) {
-			// Replace the metabox.
-			remove_meta_box( 'revisionsdiv', null, 'normal' );
-			add_meta_box(
-				'revisionsdiv-wp-rev-ctl',
-				__(
-					'Revisions',
-					'wp_revisions_control'
-				),
-				array(
-					$this,
-					'revisions_meta_box',
-				),
-				null,
-				'normal',
-				'core'
-			);
-
-			// A bit of JS for us.
-			$handle = 'wp-revisions-control-post';
-			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __DIR__ ), array( 'jquery' ), '20131205', true );
-			wp_localize_script(
-				$handle,
-				$this->settings_section,
-				array(
-					'namespace'       => $this->settings_section,
-					'action_base'     => $this->settings_section,
-					'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
-					'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp_revisions_control' ),
-					'autosave'        => __( 'Autosave', 'wp_revisions_control' ),
-					'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp_revisions_control' ) ),
-					'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' ),
-				)
-			);
-
-			// Add some styling to our metabox additions.
-			add_action( 'admin_head', array( $this, 'action_admin_head' ), 999 );
+		if (
+			use_block_editor_for_post( $post )
+			|| ! post_type_supports( $post_type, 'revisions' )
+			|| 'auto-draft' === get_post_status()
+			|| count( wp_get_post_revisions( $post ) ) < 1
+		) {
+			return;
 		}
+
+		// Replace the metabox.
+		remove_meta_box( 'revisionsdiv', null, 'normal' );
+		add_meta_box(
+			'revisionsdiv-wp-rev-ctl',
+			__(
+				'Revisions',
+				'wp_revisions_control'
+			),
+			array(
+				$this,
+				'revisions_meta_box',
+			),
+			null,
+			'normal',
+			'core'
+		);
+
+		// A bit of JS for us.
+		$handle = 'wp-revisions-control-post';
+		wp_enqueue_script( $handle, plugins_url( 'js/post.js', __DIR__ ), array( 'jquery' ), '20131205', true );
+		wp_localize_script(
+			$handle,
+			$this->settings_section,
+			array(
+				'namespace'       => $this->settings_section,
+				'action_base'     => $this->settings_section,
+				'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
+				'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp_revisions_control' ),
+				'autosave'        => __( 'Autosave', 'wp_revisions_control' ),
+				'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp_revisions_control' ) ),
+				'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' ),
+			)
+		);
+
+		// Add some styling to our metabox additions.
+		add_action( 'admin_head', array( $this, 'action_admin_head' ), 999 );
 	}
 
 	/**
