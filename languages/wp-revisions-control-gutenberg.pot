@@ -3,10 +3,18 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "X-Generator: babel-plugin-makepot\n"
 
-#: src/js/gutenberg.js:13
+#: src/js/gutenberg.js:14
 msgid "WP Revisions Control"
 msgstr ""
 
-#: src/js/gutenberg.js:17
-msgid "Number of revisions to retain."
+#: src/js/gutenberg.js:18
+msgid "Number of revisions to retain:"
+msgstr ""
+
+#: src/js/gutenberg.js:19
+msgid "Leave blank to keep all revisions."
+msgstr ""
+
+#: src/js/gutenberg.js:26
+msgid "Purge excess revisions"
 msgstr ""
