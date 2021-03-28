@@ -330,7 +330,7 @@ class WP_Revisions_Control {
 			),
 			array(
 				'jquery',
-				),
+			),
 			2013120501,
 			true
 		);
