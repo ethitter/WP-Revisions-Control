@@ -1,8 +1,1 @@
-/******/ (function() { // webpackBootstrap
-var __webpack_exports__ = {};
-/*!*****************************!*\
-  !*** ./src/js/gutenberg.js ***!
-  \*****************************/
-console.log('Hello, world');
-/******/ })()
-;
+!function(){var o,r={194:function(o){"use strict";o.exports=wp.i18n}},t={};function n(o){var e=t[o];if(void 0!==e)return e.exports;var s=t[o]={exports:{}};return r[o](s,s.exports,n),s.exports}o=n(194).__,console.log(o("Hello, world","wp_revisions_control"))}();

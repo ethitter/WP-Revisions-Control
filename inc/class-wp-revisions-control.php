@@ -114,9 +114,34 @@ class WP_Revisions_Control {
 	 * Register actions and filters.
 	 */
 	public function action_init() {
+		add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'action_enqueue_block_editor_assets' ) );
 
 		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), $this->plugin_priority(), 2 );
+	}
+
+	/**
+	 * Register meta for Gutenberg UI.
+	 */
+	public function action_rest_api_init() {
+		foreach ( array_keys( $this->get_post_types() ) as $post_type ) {
+			register_meta(
+				'post',
+				$this->meta_key_limit,
+				array(
+					'object_subtype' => $post_type,
+					'type'           => 'integer',
+					'default'        => -1,
+					'single'         => true,
+					'show_in_rest'   => true,
+					'description' => __(
+						'Number of revisions to retain.',
+						'wp_revisions_control'
+					),
+				)
+			);
+		}
 	}
 
 	/**
@@ -143,6 +168,23 @@ class WP_Revisions_Control {
 
 		// Bulk actions.
 		WP_Revisions_Control_Bulk_Actions::get_instance( $post_types );
+	}
+
+	/**
+	 * Register Gutenberg script.
+	 */
+	public function action_enqueue_block_editor_assets() {
+		wp_enqueue_script(
+			$this->settings_section,
+			plugins_url(
+				'dist/js/gutenberg.js',
+				dirname( __FILE__ )
+			),
+			array(
+				'wp-i18n',
+			),
+			1
+		);
 	}
 
 	/**
