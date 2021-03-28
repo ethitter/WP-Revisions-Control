@@ -1,8 +1,10 @@
-const { Button, TextControl } = require( '@wordpress/components' );
+const apiFetch = require( '@wordpress/api-fetch' );
+const { Button, Modal, TextControl } = require( '@wordpress/components' );
 const { compose } = require( '@wordpress/compose' );
 const { withSelect, withDispatch } = require( '@wordpress/data' );
 const { PluginDocumentSettingPanel } = require( '@wordpress/edit-post' );
-const { __ } = require( '@wordpress/i18n' );
+const { useState } = require( '@wordpress/element' );
+const { __, _n, sprintf } = require( '@wordpress/i18n' );
 const { registerPlugin } = require( '@wordpress/plugins' );
 
 const metaKey = '_wp_rev_ctl_limit';
@@ -21,14 +23,58 @@ const Render = ( { limit, manualPurge, showPurgeButton, updateMeta } ) => (
 			onChange={ updateMeta }
 		/>
 
-		{ showPurgeButton && (
-			<Button onClick={ manualPurge }>
-				{ __( 'Purge excess revisions', 'wp_revisions_control' ) }
-			</Button>
-		) }
-
+		{ showPurgeButton && PurgeModal( limit, manualPurge ) }
 	</PluginDocumentSettingPanel>
 );
+
+const PurgeModal = ( limit, manualPurge ) => {
+	const [ isOpen, setOpen ] = useState( false );
+	const openModal = () => setOpen( true );
+	const closeModal = () => setOpen( false );
+	const closeModalAndPurge = () => {
+		closeModal();
+		manualPurge();
+	};
+
+	/* translators: 1. Number of revisions to keep. */
+	const modalText = sprintf(
+		_n(
+			'This will remove all but the most-recent revision.',
+			'This will remove all but the %1$d most-recent revisions.',
+			parseInt( limit ),
+			'wp_revisions_control'
+		),
+		limit
+	);
+
+	return (
+		<>
+			<Button isSecondary onClick={ openModal }>
+				{ __( 'Purge excess revisions', 'wp_revisions_control' ) }
+			</Button>
+
+			{ isOpen && (
+				<Modal
+					title={ __( 'Purge excess revisions', 'wp_revisions_control' ) }
+					contentLabel={ modalText }
+					onRequestClose={ closeModal }
+				>
+					<p>
+						{ modalText }
+					</p>
+
+					<Button isSecondary onClick={ closeModal }>
+						{ __( 'Cancel', 'wp_revisions_control' ) }
+					</Button>
+
+					<Button isPrimary onClick={ closeModalAndPurge }>
+						{ __( 'Purge', 'wp_revisions_control' ) }
+					</Button>
+				</Modal>
+			) }
+		</>
+	)
+}
 
 const RevisionsControl = compose(
 	[
@@ -51,10 +97,36 @@ const RevisionsControl = compose(
 				showPurgeButton,
 			};
 		} ),
-		withDispatch( ( dispatch, { limit } ) => {
+		withDispatch( ( dispatch, { limit }, { select } ) => {
 			const manualPurge = () => {
-				// TODO: reuse the existing Ajax endpoint?
-				console.log( 'Purging!', limit );
+				const postId = select( 'core/editor' ).getCurrentPostId();
+
+				apiFetch( {
+					path: `/wp-revisions-control/v1/schedule/${postId}`,
+					method: 'PUT',
+				} )
+					.then( ( result ) => {
+						let noticeType;
+						let noticeText;
+
+						if ( result ) {
+							noticeType = 'success';
+							noticeText = __( 'Excess revisions scheduled for removal.', 'wp_revisions_control' );
+						} else {
+							noticeType = 'error';
+							noticeText = __( 'Failed to schedule excess revisions for removal.', 'wp_revisions_control' );
+						}
+
+						dispatch( 'core/notices' ).createNotice(
+							noticeType,
+							noticeText,
+							{
+								id: 'wp-revisions-control-scheduled-purge',
+								isDismissible: true,
+								type: 'snackbar',
+							}
+						);
+					} );
 			};
 
 			const updateMeta = ( value ) => {

@@ -3,18 +3,40 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "X-Generator: babel-plugin-makepot\n"
 
-#: src/js/gutenberg.js:14
+#: src/js/gutenberg.js:114
+msgid "Excess revisions scheduled for removal."
+msgstr ""
+
+#: src/js/gutenberg.js:117
+msgid "Failed to schedule excess revisions for removal."
+msgstr ""
+
+#: src/js/gutenberg.js:16
 msgid "WP Revisions Control"
 msgstr ""
 
-#: src/js/gutenberg.js:18
+#: src/js/gutenberg.js:20
 msgid "Number of revisions to retain:"
 msgstr ""
 
-#: src/js/gutenberg.js:19
+#: src/js/gutenberg.js:21
 msgid "Leave blank to keep all revisions."
 msgstr ""
 
-#: src/js/gutenberg.js:26
+#: src/js/gutenberg.js:41
+msgid "This will remove all but the most-recent revision."
+msgid_plural "This will remove all but the %1$d most-recent revisions."
+msgstr[0] ""
+msgstr[1] ""
+
+#: src/js/gutenberg.js:58
 msgid "Purge excess revisions"
+msgstr ""
+
+#: src/js/gutenberg.js:67
+msgid "Cancel"
+msgstr ""
+
+#: src/js/gutenberg.js:71
+msgid "Purge"
 msgstr ""
