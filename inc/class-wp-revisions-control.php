@@ -65,6 +65,13 @@ class WP_Revisions_Control {
 	private $settings_section = 'wp_revisions_control';
 
 	/**
+	 * Name of setting to disable native Gutenberg component.
+	 *
+	 * @var string
+	 */
+	private $setting_native_gutenberg;
+
+	/**
 	 * Meta key holding post's revisions limit.
 	 *
 	 * @var string
@@ -102,6 +109,8 @@ class WP_Revisions_Control {
 	 * Register actions and filters at `init` so others can interact, if desired.
 	 */
 	private function setup() {
+		$this->setting_native_gutenberg = $this->settings_section . '_gutenberg';
+
 		add_action( 'plugins_loaded', array( $this, 'action_plugins_loaded' ) );
 		add_action( 'init', array( $this, 'action_init' ) );
 	}
@@ -125,10 +134,12 @@ class WP_Revisions_Control {
 
 		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), $this->plugin_priority(), 2 );
 
-		add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
-		add_filter( 'is_protected_meta', array( $this, 'filter_is_protected_meta' ), 10, 2 );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'action_enqueue_block_editor_assets' ) );
-		add_action( $this->cron_action, array( $this, 'do_purge_excess' ) );
+		if ( $this->use_gutenberg_component() ) {
+			add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
+			add_filter( 'is_protected_meta', array( $this, 'filter_is_protected_meta' ), 10, 2 );
+			add_action( 'enqueue_block_editor_assets', array( $this, 'action_enqueue_block_editor_assets' ) );
+			add_action( $this->cron_action, array( $this, 'do_purge_excess' ) );
+		}
 	}
 
 	/**
@@ -141,11 +152,25 @@ class WP_Revisions_Control {
 
 		// Plugin setting section.
 		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
+		register_setting( $this->settings_page, $this->setting_native_gutenberg, array( $this, 'sanitize_gutenberg_option' ) );
 
 		add_settings_section( $this->settings_section, 'WP Revisions Control', array( $this, 'settings_section_intro' ), $this->settings_page );
 
 		foreach ( $post_types as $post_type => $name ) {
 			add_settings_field( $this->settings_section . '-' . $post_type, $name, array( $this, 'field_post_type' ), $this->settings_page, $this->settings_section, array( 'post_type' => $post_type ) );
+		}
+
+		if ( function_exists( 'use_block_editor_for_post' ) ) {
+			add_settings_field(
+				$this->settings_section . '-gutenberg',
+				__(
+					'Gutenberg',
+					'wp_revisions_control'
+				),
+				array( $this, 'field_gutenberg' ),
+				$this->settings_page,
+				$this->settings_section
+			);
 		}
 
 		// Post-level functionality.
@@ -204,6 +229,42 @@ class WP_Revisions_Control {
 	}
 
 	/**
+	 * Render field to disable Gutenberg component.
+	 */
+	public function field_gutenberg() {
+		$setting_id = $this->settings_section . '_gutenberg';
+
+		$checked = (bool) get_option( $this->setting_native_gutenberg, false );
+
+		?>
+		<input
+			type="checkbox"
+			id="<?php echo esc_attr( $setting_id ); ?>"
+			name="<?php echo esc_attr( $this->setting_native_gutenberg ); ?>"
+			value="1"
+			<?php checked( $checked ); ?>
+		/>
+		<label for="<?php echo esc_attr( $setting_id ); ?>">
+			<?php
+				esc_html_e(
+					'Disable Gutenberg sidebar component',
+					'wp_revisions_control'
+				);
+			?>
+		</label>
+
+		<p class="description">
+			<?php
+			esc_html_e(
+				'If checked, the plugin\'s previous interface will appear below the post content in Gutenberg, rather than appearing in the sidebar.',
+				'wp_revisions_control'
+			);
+			?>
+		</p>
+		<?php
+	}
+
+	/**
 	 * Sanitize plugin settings.
 	 *
 	 * @param array $options Unsanitized settings.
@@ -217,14 +278,14 @@ class WP_Revisions_Control {
 				$type_length = strlen( $to_keep );
 
 				if ( 0 === $type_length ) {
-					$to_keep = -1;
+					$to_keep = - 1;
 				} else {
 					$to_keep = (int) $to_keep;
 				}
 
 				// Lowest possible value is -1, used to indicate infinite revisions are stored.
-				if ( -1 > $to_keep ) {
-					$to_keep = -1;
+				if ( - 1 > $to_keep ) {
+					$to_keep = - 1;
 				}
 
 				$options_sanitized[ $post_type ] = $to_keep;
@@ -232,6 +293,16 @@ class WP_Revisions_Control {
 		}
 
 		return $options_sanitized;
+	}
+
+	/**
+	 * Convert Gutenberg checkbox to a boolean.
+	 *
+	 * @param mixed $option Value to sanitize.
+	 * @return bool
+	 */
+	public function sanitize_gutenberg_option( $option ) {
+		return (bool) $option;
 	}
 
 	/**
@@ -292,12 +363,14 @@ class WP_Revisions_Control {
 	 */
 	public function action_add_meta_boxes( $post_type, $post ) {
 		if (
-			(
-				function_exists( 'use_block_editor_for_post' )
-				&& use_block_editor_for_post( $post )
-			)
+			$this->use_gutenberg_component()
 			|| ! post_type_supports( $post_type, 'revisions' )
 			|| 'auto-draft' === get_post_status()
+			|| (
+				function_exists( 'use_block_editor_for_post' )
+				&& use_block_editor_for_post( $post )
+				&& $this->use_gutenberg_component()
+			)
 			|| count( wp_get_post_revisions( $post ) ) < 1
 		) {
 			return;
@@ -765,6 +838,15 @@ class WP_Revisions_Control {
 		}
 
 		return $to_keep;
+	}
+
+	/**
+	 * Is the Gutenberg component enabled?
+	 *
+	 * @return bool
+	 */
+	private function use_gutenberg_component() {
+		return ! (bool) get_option( $this->setting_native_gutenberg, false );
 	}
 }
 
