@@ -1,6 +1,12 @@
 const mix = require( 'laravel-mix' );
 
-mix.autoload( {} )
+mix
+	.autoload( {} )
+	.options( {
+		terser: {
+			extractComments: false,
+		}
+	} )
 	.js( 'src/js/gutenberg.js', 'dist/js/gutenberg.js' )
 	.react()
 	.babelConfig( {
@@ -23,5 +29,5 @@ mix.autoload( {} )
 			'@wordpress/plugins': 'wp.plugins',
 			'react': 'React',
 			'react-dom': 'ReactDOM',
-		}
+		},
 	} );
