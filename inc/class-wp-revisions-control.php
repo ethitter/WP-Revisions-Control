@@ -292,7 +292,10 @@ class WP_Revisions_Control {
 	 */
 	public function action_add_meta_boxes( $post_type, $post ) {
 		if (
-			use_block_editor_for_post( $post )
+			(
+				function_exists( 'use_block_editor_for_post' )
+				&& use_block_editor_for_post( $post )
+			)
 			|| ! post_type_supports( $post_type, 'revisions' )
 			|| 'auto-draft' === get_post_status()
 			|| count( wp_get_post_revisions( $post ) ) < 1
