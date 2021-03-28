@@ -555,7 +555,7 @@ class WP_Revisions_Control {
 			'wp-revisions-control/v1',
 			'schedule/(?P<id>[\d]+)',
 			array(
-				'methods'              => 'PUT',
+				'methods'             => 'PUT',
 				'callback'            => array( $this, 'rest_api_schedule_purge' ),
 				'permission_callback' => array( $this, 'rest_api_permission_callback' ),
 				'args'                => array(
@@ -565,6 +565,7 @@ class WP_Revisions_Control {
 						'validate_callback' => array( $this, 'rest_api_validate_id' ),
 					),
 				),
+				'show_in_index'       => false,
 			)
 		);
 	}
@@ -602,9 +603,9 @@ class WP_Revisions_Control {
 		$result = wp_schedule_single_event(
 			time() + 3,
 			$this->cron_action,
-			[
+			array(
 				$request->get_param( 'id' ),
-			]
+			)
 		);
 
 		return rest_ensure_response( $result );
