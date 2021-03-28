@@ -178,12 +178,12 @@ class WP_Revisions_Control {
 			$this->settings_section,
 			plugins_url(
 				'dist/js/gutenberg.js',
-				dirname( __FILE__ )
+				__DIR__
 			),
 			array(
 				'wp-i18n',
 			),
-			1
+			2021032701
 		);
 	}
 
@@ -349,7 +349,18 @@ class WP_Revisions_Control {
 
 		// A bit of JS for us.
 		$handle = 'wp-revisions-control-post';
-		wp_enqueue_script( $handle, plugins_url( 'js/post.js', __DIR__ ), array( 'jquery' ), '20131205', true );
+		wp_enqueue_script(
+			$handle,
+			plugins_url(
+				'dist/js/classic-editor.js',
+				__DIR__
+			),
+			array(
+				'jquery',
+				),
+			2013120501,
+			true
+		);
 		wp_localize_script(
 			$handle,
 			$this->settings_section,
