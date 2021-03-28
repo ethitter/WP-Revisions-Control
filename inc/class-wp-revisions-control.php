@@ -72,6 +72,13 @@ class WP_Revisions_Control {
 	private $meta_key_limit = '_wp_rev_ctl_limit';
 
 	/**
+	 * Name of action used to clean up post's revisions via cron.
+	 *
+	 * @var string
+	 */
+	private $cron_action = 'wp_revisions_control_cron_purge';
+
+	/**
 	 * Silence is golden!
 	 */
 	private function __construct() {}
@@ -121,6 +128,7 @@ class WP_Revisions_Control {
 		add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
 		add_filter( 'is_protected_meta', array( $this, 'filter_is_protected_meta' ), 10, 2 );
 		add_action( 'enqueue_block_editor_assets', array( $this, 'action_enqueue_block_editor_assets' ) );
+		add_action( $this->cron_action, array( $this, 'do_purge_excess' ) );
 	}
 
 	/**
@@ -279,8 +287,8 @@ class WP_Revisions_Control {
 	/**
 	 * Override Core's revisions metabox.
 	 *
-	 * @param string   $post_type Post type.
-	 * @param \WP_Post $post      Post object.
+	 * @param string  $post_type Post type.
+	 * @param WP_Post $post      Post object.
 	 */
 	public function action_add_meta_boxes( $post_type, $post ) {
 		if (
@@ -522,7 +530,7 @@ class WP_Revisions_Control {
 	 */
 
 	/**
-	 * Register meta for Gutenberg UI.
+	 * Register REST API components for Gutenberg UI.
 	 */
 	public function action_rest_api_init() {
 		foreach ( array_keys( $this->get_post_types() ) as $post_type ) {
@@ -542,6 +550,64 @@ class WP_Revisions_Control {
 				)
 			);
 		}
+
+		register_rest_route(
+			'wp-revisions-control/v1',
+			'schedule/(?P<id>[\d]+)',
+			array(
+				'methods'              => 'PUT',
+				'callback'            => array( $this, 'rest_api_schedule_purge' ),
+				'permission_callback' => array( $this, 'rest_api_permission_callback' ),
+				'args'                => array(
+					'id' => array(
+						'required'          => true,
+						'type'              => 'integer',
+						'validate_callback' => array( $this, 'rest_api_validate_id' ),
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Permissions callback for REST endpoint.
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return bool
+	 */
+	public function rest_api_permission_callback( $request ) {
+		return current_user_can(
+			'edit_post',
+			$request->get_param( 'id' )
+		);
+	}
+
+	/**
+	 * Validate post ID.
+	 *
+	 * @param int $input Post ID.
+	 * @return bool
+	 */
+	public function rest_api_validate_id( $input ) {
+		return is_numeric( $input );
+	}
+
+	/**
+	 * Schedule cleanup of post's excess revisions.
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response
+	 */
+	public function rest_api_schedule_purge( $request ) {
+		$result = wp_schedule_single_event(
+			time() + 3,
+			$this->cron_action,
+			[
+				$request->get_param( 'id' ),
+			]
+		);
+
+		return rest_ensure_response( $result );
 	}
 
 	/**
