@@ -15,7 +15,12 @@ mix.autoload( {} )
 	} )
 	.webpackConfig( {
 		externals: {
+			'@wordpress/components': 'wp.components',
+			'@wordpress/compose': 'wp.compose',
+			'@wordpress/data': 'wp.data',
+			'@wordpress/edit-post': 'wp.editPost',
 			'@wordpress/i18n': 'wp.i18n',
+			'@wordpress/plugins': 'wp.plugins',
 			'react': 'React',
 			'react-dom': 'ReactDOM',
 		}

@@ -181,7 +181,12 @@ class WP_Revisions_Control {
 				__DIR__
 			),
 			array(
+				'wp-components',
+				'wp-compose',
+				'wp-data',
+				'wp-edit-post',
 				'wp-i18n',
+				'wp-plugins',
 			),
 			2021032701
 		);
