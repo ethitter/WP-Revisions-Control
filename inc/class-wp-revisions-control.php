@@ -114,34 +114,13 @@ class WP_Revisions_Control {
 	 * Register actions and filters.
 	 */
 	public function action_init() {
-		add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
-		add_action( 'enqueue_block_editor_assets', array( $this, 'action_enqueue_block_editor_assets' ) );
 
 		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), $this->plugin_priority(), 2 );
-	}
 
-	/**
-	 * Register meta for Gutenberg UI.
-	 */
-	public function action_rest_api_init() {
-		foreach ( array_keys( $this->get_post_types() ) as $post_type ) {
-			register_meta(
-				'post',
-				$this->meta_key_limit,
-				array(
-					'object_subtype' => $post_type,
-					'type'           => 'integer',
-					'default'        => -1,
-					'single'         => true,
-					'show_in_rest'   => true,
-					'description' => __(
-						'Number of revisions to retain.',
-						'wp_revisions_control'
-					),
-				)
-			);
-		}
+		add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
+		add_filter( 'is_protected_meta', array( $this, 'filter_is_protected_meta' ), 10, 2 );
+		add_action( 'enqueue_block_editor_assets', array( $this, 'action_enqueue_block_editor_assets' ) );
 	}
 
 	/**
@@ -168,28 +147,6 @@ class WP_Revisions_Control {
 
 		// Bulk actions.
 		WP_Revisions_Control_Bulk_Actions::get_instance( $post_types );
-	}
-
-	/**
-	 * Register Gutenberg script.
-	 */
-	public function action_enqueue_block_editor_assets() {
-		wp_enqueue_script(
-			$this->settings_section,
-			plugins_url(
-				'dist/js/gutenberg.js',
-				__DIR__
-			),
-			array(
-				'wp-components',
-				'wp-compose',
-				'wp-data',
-				'wp-edit-post',
-				'wp-i18n',
-				'wp-plugins',
-			),
-			2021032701
-		);
 	}
 
 	/**
@@ -558,6 +515,70 @@ class WP_Revisions_Control {
 			}
 		</style>
 		<?php
+	}
+
+	/**
+	 * GUTENBERG SUPPORT.
+	 */
+
+	/**
+	 * Register meta for Gutenberg UI.
+	 */
+	public function action_rest_api_init() {
+		foreach ( array_keys( $this->get_post_types() ) as $post_type ) {
+			register_meta(
+				'post',
+				$this->meta_key_limit,
+				array(
+					'object_subtype' => $post_type,
+					'type'           => 'string', // Can be empty, so must be string.
+					'default'        => '',
+					'single'         => true,
+					'show_in_rest'   => true,
+					'description'    => __(
+						'Number of revisions to retain.',
+						'wp_revisions_control'
+					),
+				)
+			);
+		}
+	}
+
+	/**
+	 * Allow our meta to be edited from Gutenberg.
+	 *
+	 * @param bool   $protected If meta is protected.
+	 * @param string $meta_key  Meta key being checked.
+	 * @return false
+	 */
+	public function filter_is_protected_meta( $protected, $meta_key ) {
+		if ( $meta_key === $this->meta_key_limit ) {
+			return false;
+		}
+
+		return $protected;
+	}
+
+	/**
+	 * Register Gutenberg script.
+	 */
+	public function action_enqueue_block_editor_assets() {
+		wp_enqueue_script(
+			$this->settings_section,
+			plugins_url(
+				'dist/js/gutenberg.js',
+				__DIR__
+			),
+			array(
+				'wp-components',
+				'wp-compose',
+				'wp-data',
+				'wp-edit-post',
+				'wp-i18n',
+				'wp-plugins',
+			),
+			2021032701
+		);
 	}
 
 	/**
