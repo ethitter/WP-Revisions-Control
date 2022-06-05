@@ -66,4 +66,5 @@ For any post type that supports revisions, you can now limit the number of revis
 == Screenshots ==
 
 1. The plugin's settings section, found under **Settings > Writing**.
-2. The post-level controls provided in version 1.2.
+2. The post-level controls for the Classic Editor provided in version 1.2.
+3. The post-level controls for the Block Editor provided in version 1.4.
