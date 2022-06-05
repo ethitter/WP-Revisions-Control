@@ -15,7 +15,6 @@ bin
 composer.json
 composer.lock
 Gruntfile.js
-mix-manifest.json
 package.json
 package-lock.json
 phpunit.xml
@@ -27,8 +26,7 @@ phpcs.xml
 .phpcs.xml.dist
 phpcs.xml.dist
 README.md
-src/
-webpack.mix.js
+assets/src/
 wp-cli.local.yml
 yarn.lock
 tests
