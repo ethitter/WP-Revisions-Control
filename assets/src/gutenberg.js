@@ -16,6 +16,7 @@ const Render = ( { limit, manualPurge, showPurgeButton, updateMeta } ) => (
 		title={ __( 'WP Revisions Control', 'wp_revisions_control' ) }
 		className={ slug }
 	>
+		{/* TODO: switch to InputControl when it becomes available. */}
 		<TextControl
 			label={ __( 'Number of revisions to retain:', 'wp_revisions_control' ) }
 			help={ __( 'Leave blank to keep all revisions.', 'wp_revisions_control' ) }
@@ -36,8 +37,8 @@ const PurgeModal = ( limit, manualPurge ) => {
 		manualPurge();
 	};
 
-	/* translators: 1. Number of revisions to keep. */
 	const modalText = sprintf(
+		/* translators: 1. Number of revisions to keep. */
 		_n(
 			'This will remove all but the most-recent revision.',
 			'This will remove all but the %1$d most-recent revisions.',
@@ -76,6 +77,7 @@ const PurgeModal = ( limit, manualPurge ) => {
 	)
 }
 
+// TODO: switch to `useSelect` and `useDispatch`.
 const RevisionsControl = compose(
 	[
 		withSelect( ( select ) => {
@@ -146,7 +148,7 @@ const RevisionsControl = compose(
 )( Render );
 
 registerPlugin(
-	'plugin-document-setting-panel-demo',
+	slug,
 	{
 		render: RevisionsControl,
 		icon: 'backup',
