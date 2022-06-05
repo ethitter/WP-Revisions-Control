@@ -147,7 +147,7 @@ class Block_Editor {
 	 * @return false
 	 */
 	public function filter_is_protected_meta( $protected, $meta_key ) {
-		if ( $meta_key === WP_REVISIONS_CONTROL_LIMIT_META_KEY ) {
+		if ( WP_REVISIONS_CONTROL_LIMIT_META_KEY === $meta_key ) {
 			return false;
 		}
 
@@ -167,7 +167,7 @@ class Block_Editor {
 				__DIR__
 			),
 			$asset_data['dependencies'],
-			$asset_data['version'],
+			$asset_data['version']
 		);
 	}
 }
