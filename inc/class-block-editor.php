@@ -34,19 +34,6 @@ class Block_Editor {
 		add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
 		add_filter( 'is_protected_meta', array( $this, 'filter_is_protected_meta' ), 10, 2 );
 		add_action( $this->cron_action, array( WP_Revisions_Control::get_instance(), 'do_purge_excess' ), 10, 2 );
-		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
-	}
-
-	/**
-	 * Register admin-only hooks.
-	 *
-	 * @return void
-	 */
-	public function action_admin_init() {
-		if ( ! function_exists( 'use_block_editor_for_post' ) ) {
-			return;
-		}
-
 		add_action( 'enqueue_block_editor_assets', array( $this, 'action_enqueue_block_editor_assets' ) );
 	}
 
