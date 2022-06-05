@@ -125,12 +125,15 @@ const RevisionsControl = compose( [
 			showPurgeButton,
 		};
 	} ),
-	withDispatch( ( dispatch, {}, { select } ) => {
+	withDispatch( ( dispatch, { limit }, { select } ) => {
 		const manualPurge = () => {
 			const postId = select( 'core/editor' ).getCurrentPostId();
 
 			apiFetch( {
-				path: `/wp-revisions-control/v1/schedule/${ postId }`,
+				path: `/wp-revisions-control/v1/schedule/${ postId }/${ parseInt(
+					limit,
+					10
+				) }`,
 				method: 'PUT',
 			} ).then( ( result ) => {
 				let noticeType;

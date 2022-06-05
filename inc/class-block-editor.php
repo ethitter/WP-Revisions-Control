@@ -33,7 +33,7 @@ class Block_Editor {
 	private function setup() {
 		add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
 		add_filter( 'is_protected_meta', array( $this, 'filter_is_protected_meta' ), 10, 2 );
-		add_action( $this->cron_action, array( WP_Revisions_Control::get_instance(), 'do_purge_excess' ) );
+		add_action( $this->cron_action, array( WP_Revisions_Control::get_instance(), 'do_purge_excess' ), 10, 2 );
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
 	}
 
@@ -78,15 +78,21 @@ class Block_Editor {
 
 		register_rest_route(
 			'wp-revisions-control/v1',
-			'schedule/(?P<id>[\d]+)',
+			'schedule/(?P<id>[\d]+)/(?P<limit_override>[\d]+)',
 			array(
 				'methods'             => 'PUT',
 				'callback'            => array( $this, 'rest_api_schedule_purge' ),
 				'permission_callback' => array( $this, 'rest_api_permission_callback' ),
 				'args'                => array(
-					'id' => array(
+					'id'             => array(
 						'required'          => true,
 						'type'              => 'integer',
+						'validate_callback' => array( $this, 'rest_api_validate_id' ),
+					),
+					'limit_override' => array(
+						'required'          => false,
+						'type'              => 'integer',
+						'default'           => null,
 						'validate_callback' => array( $this, 'rest_api_validate_id' ),
 					),
 				),
@@ -130,6 +136,7 @@ class Block_Editor {
 			$this->cron_action,
 			array(
 				$request->get_param( 'id' ),
+				$request->get_param( 'limit_override' ),
 			)
 		);
 

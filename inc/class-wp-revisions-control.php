@@ -413,15 +413,19 @@ class WP_Revisions_Control {
 	/**
 	 * Remove any revisions in excess of a post's limit.
 	 *
-	 * @param int $post_id Post ID to purge of excess revisions.
+	 * @param int      $post_id        Post ID to purge of excess revisions.
+	 * @param int|null $limit_override Optional. Override post's revisions
+	 *                                 limit.
 	 * @return array
 	 */
-	public function do_purge_excess( $post_id ) {
+	public function do_purge_excess( $post_id, $limit_override = null ) {
 		$response = array(
 			'count' => 0,
 		);
 
-		$to_keep = wp_revisions_to_keep( get_post( $post_id ) );
+		$to_keep = null !== $limit_override
+			? $limit_override
+			: wp_revisions_to_keep( get_post( $post_id ) );
 
 		if ( $to_keep < 0 ) {
 			$response['success'] = __(
