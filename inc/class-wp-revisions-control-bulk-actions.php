@@ -18,7 +18,7 @@ class WP_Revisions_Control_Bulk_Actions {
 	 *
 	 * @var array
 	 */
-	public static $post_types;
+	protected $post_types;
 
 	/**
 	 * Base for bulk action names.
@@ -38,7 +38,9 @@ class WP_Revisions_Control_Bulk_Actions {
 	 * One-time actions.
 	 */
 	public function setup() {
-		if ( empty( static::$post_types ) || ! is_array( static::$post_types ) ) {
+		$this->post_types = WP_Revisions_Control::get_instance()->get_post_types();
+
+		if ( empty( $this->post_types ) || ! is_array( $this->post_types ) ) {
 			return;
 		}
 
@@ -77,7 +79,7 @@ class WP_Revisions_Control_Bulk_Actions {
 			return;
 		}
 
-		if ( ! array_key_exists( $screen->post_type, static::$post_types ) ) {
+		if ( ! array_key_exists( $screen->post_type, $this->post_types ) ) {
 			return;
 		}
 

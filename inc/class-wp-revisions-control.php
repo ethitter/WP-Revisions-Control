@@ -122,7 +122,6 @@ class WP_Revisions_Control {
 		add_action( 'save_post', array( $this, 'action_save_post' ) );
 
 		// Bulk actions.
-		WP_Revisions_Control_Bulk_Actions::$post_types = $post_types;
 		WP_Revisions_Control_Bulk_Actions::get_instance();
 	}
 
