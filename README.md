@@ -65,6 +65,12 @@ For any post type that supports revisions, you can now limit the number of revis
 
 ## Screenshots ##
 
-1. The plugin's settings section, found under **Settings > Writing**.
-2. The post-level controls for the Classic Editor provided in version 1.2.
-3. The post-level controls for the Block Editor provided in version 1.4.
+### 1. The plugin's settings section, found under **Settings > Writing**. ###
+![The plugin's settings section, found under **Settings > Writing**.](https://git-cdn.e15r.co/wp-plugins/wp-revisions-control/-/raw/master/.wordpress-org/screenshot-1.png)
+
+### 2. The post-level controls for the Classic Editor provided in version 1.2. ###
+![The post-level controls for the Classic Editor provided in version 1.2.](https://git-cdn.e15r.co/wp-plugins/wp-revisions-control/-/raw/master/.wordpress-org/screenshot-2.png)
+
+### 3. The post-level controls for the Block Editor provided in version 1.4. ###
+![The post-level controls for the Block Editor provided in version 1.4.](https://git-cdn.e15r.co/wp-plugins/wp-revisions-control/-/raw/master/.wordpress-org/screenshot-3.png)
+
