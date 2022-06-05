@@ -5,16 +5,14 @@
  * @package WP_Revisions_Control
  */
 
+use WP_Revisions_Control\Block_Editor;
+use WP_Revisions_Control\Singleton;
+
 /**
  * Class WP_Revisions_Control.
  */
 class WP_Revisions_Control {
-	/**
-	 * Singleton.
-	 *
-	 * @var static
-	 */
-	private static $__instance;
+	use Singleton;
 
 	/**
 	 * Filter priority.
@@ -65,13 +63,6 @@ class WP_Revisions_Control {
 	private $settings_section = 'wp_revisions_control';
 
 	/**
-	 * Name of setting to disable native Gutenberg component.
-	 *
-	 * @var string
-	 */
-	private $setting_native_gutenberg;
-
-	/**
 	 * Meta key holding post's revisions limit.
 	 *
 	 * @var string
@@ -79,40 +70,13 @@ class WP_Revisions_Control {
 	private $meta_key_limit = '_wp_rev_ctl_limit';
 
 	/**
-	 * Name of action used to clean up post's revisions via cron.
-	 *
-	 * @var string
-	 */
-	private $cron_action = 'wp_revisions_control_cron_purge';
-
-	/**
-	 * Silence is golden!
-	 */
-	private function __construct() {}
-
-	/**
-	 * Singleton implementation.
-	 *
-	 * @return static
-	 */
-	public static function get_instance() {
-		if ( ! is_a( static::$__instance, __CLASS__ ) ) {
-			static::$__instance = new self();
-
-			static::$__instance->setup();
-		}
-
-		return static::$__instance;
-	}
-
-	/**
 	 * Register actions and filters at `init` so others can interact, if desired.
 	 */
 	private function setup() {
-		$this->setting_native_gutenberg = $this->settings_section . '_gutenberg';
-
 		add_action( 'plugins_loaded', array( $this, 'action_plugins_loaded' ) );
 		add_action( 'init', array( $this, 'action_init' ) );
+
+		Block_Editor::get_instance();
 	}
 
 	/**
@@ -133,13 +97,6 @@ class WP_Revisions_Control {
 		add_action( 'admin_init', array( $this, 'action_admin_init' ) );
 
 		add_filter( 'wp_revisions_to_keep', array( $this, 'filter_wp_revisions_to_keep' ), $this->plugin_priority(), 2 );
-
-		if ( $this->use_gutenberg_component() ) {
-			add_action( 'rest_api_init', array( $this, 'action_rest_api_init' ) );
-			add_filter( 'is_protected_meta', array( $this, 'filter_is_protected_meta' ), 10, 2 );
-			add_action( 'enqueue_block_editor_assets', array( $this, 'action_enqueue_block_editor_assets' ) );
-			add_action( $this->cron_action, array( $this, 'do_purge_excess' ) );
-		}
 	}
 
 	/**
@@ -152,25 +109,11 @@ class WP_Revisions_Control {
 
 		// Plugin setting section.
 		register_setting( $this->settings_page, $this->settings_section, array( $this, 'sanitize_options' ) );
-		register_setting( $this->settings_page, $this->setting_native_gutenberg, array( $this, 'sanitize_gutenberg_option' ) );
 
 		add_settings_section( $this->settings_section, 'WP Revisions Control', array( $this, 'settings_section_intro' ), $this->settings_page );
 
 		foreach ( $post_types as $post_type => $name ) {
 			add_settings_field( $this->settings_section . '-' . $post_type, $name, array( $this, 'field_post_type' ), $this->settings_page, $this->settings_section, array( 'post_type' => $post_type ) );
-		}
-
-		if ( function_exists( 'use_block_editor_for_post' ) ) {
-			add_settings_field(
-				$this->settings_section . '-gutenberg',
-				__(
-					'Gutenberg',
-					'wp_revisions_control'
-				),
-				array( $this, 'field_gutenberg' ),
-				$this->settings_page,
-				$this->settings_section
-			);
 		}
 
 		// Post-level functionality.
@@ -179,7 +122,8 @@ class WP_Revisions_Control {
 		add_action( 'save_post', array( $this, 'action_save_post' ) );
 
 		// Bulk actions.
-		WP_Revisions_Control_Bulk_Actions::get_instance( $post_types );
+		WP_Revisions_Control_Bulk_Actions::$post_types = $post_types;
+		WP_Revisions_Control_Bulk_Actions::get_instance();
 	}
 
 	/**
@@ -229,42 +173,6 @@ class WP_Revisions_Control {
 	}
 
 	/**
-	 * Render field to disable Gutenberg component.
-	 */
-	public function field_gutenberg() {
-		$setting_id = $this->settings_section . '_gutenberg';
-
-		$checked = (bool) get_option( $this->setting_native_gutenberg, false );
-
-		?>
-		<input
-			type="checkbox"
-			id="<?php echo esc_attr( $setting_id ); ?>"
-			name="<?php echo esc_attr( $this->setting_native_gutenberg ); ?>"
-			value="1"
-			<?php checked( $checked ); ?>
-		/>
-		<label for="<?php echo esc_attr( $setting_id ); ?>">
-			<?php
-				esc_html_e(
-					'Disable Gutenberg sidebar component',
-					'wp_revisions_control'
-				);
-			?>
-		</label>
-
-		<p class="description">
-			<?php
-			esc_html_e(
-				'If checked, the plugin\'s previous interface will appear below the post content in Gutenberg, rather than appearing in the sidebar.',
-				'wp_revisions_control'
-			);
-			?>
-		</p>
-		<?php
-	}
-
-	/**
 	 * Sanitize plugin settings.
 	 *
 	 * @param array $options Unsanitized settings.
@@ -293,16 +201,6 @@ class WP_Revisions_Control {
 		}
 
 		return $options_sanitized;
-	}
-
-	/**
-	 * Convert Gutenberg checkbox to a boolean.
-	 *
-	 * @param mixed $option Value to sanitize.
-	 * @return bool
-	 */
-	public function sanitize_gutenberg_option( $option ) {
-		return (bool) $option;
 	}
 
 	/**
@@ -335,7 +233,7 @@ class WP_Revisions_Control {
 	 * @return int
 	 */
 	public function filter_wp_revisions_to_keep( $qty, $post ) {
-		$post_limit = get_post_meta( $post->ID, $this->meta_key_limit, true );
+		$post_limit = get_post_meta( $post->ID, WP_REVISIONS_CONTROL_LIMIT_META_KEY, true );
 
 		if ( 0 < strlen( $post_limit ) ) {
 			$qty = $post_limit;
@@ -363,13 +261,11 @@ class WP_Revisions_Control {
 	 */
 	public function action_add_meta_boxes( $post_type, $post ) {
 		if (
-			$this->use_gutenberg_component()
-			|| ! post_type_supports( $post_type, 'revisions' )
+			! post_type_supports( $post_type, 'revisions' )
 			|| 'auto-draft' === get_post_status()
 			|| (
 				function_exists( 'use_block_editor_for_post' )
 				&& use_block_editor_for_post( $post )
-				&& $this->use_gutenberg_component()
 			)
 			|| count( wp_get_post_revisions( $post ) ) < 1
 		) {
@@ -572,9 +468,9 @@ class WP_Revisions_Control {
 			$limit = (int) $_POST[ $qty ];
 
 			if ( -1 === $limit || empty( $limit ) ) {
-				delete_post_meta( $post_id, $this->meta_key_limit );
+				delete_post_meta( $post_id, WP_REVISIONS_CONTROL_LIMIT_META_KEY );
 			} else {
-				update_post_meta( $post_id, $this->meta_key_limit, absint( $limit ) );
+				update_post_meta( $post_id, WP_REVISIONS_CONTROL_LIMIT_META_KEY, absint( $limit ) );
 			}
 		}
 	}
@@ -598,124 +494,6 @@ class WP_Revisions_Control {
 			}
 		</style>
 		<?php
-	}
-
-	/**
-	 * GUTENBERG SUPPORT.
-	 */
-
-	/**
-	 * Register REST API components for Gutenberg UI.
-	 */
-	public function action_rest_api_init() {
-		foreach ( array_keys( $this->get_post_types() ) as $post_type ) {
-			register_meta(
-				'post',
-				$this->meta_key_limit,
-				array(
-					'object_subtype' => $post_type,
-					'type'           => 'string', // Can be empty, so must be string.
-					'default'        => '',
-					'single'         => true,
-					'show_in_rest'   => true,
-					'description'    => __(
-						'Number of revisions to retain.',
-						'wp_revisions_control'
-					),
-				)
-			);
-		}
-
-		register_rest_route(
-			'wp-revisions-control/v1',
-			'schedule/(?P<id>[\d]+)',
-			array(
-				'methods'             => 'PUT',
-				'callback'            => array( $this, 'rest_api_schedule_purge' ),
-				'permission_callback' => array( $this, 'rest_api_permission_callback' ),
-				'args'                => array(
-					'id' => array(
-						'required'          => true,
-						'type'              => 'integer',
-						'validate_callback' => array( $this, 'rest_api_validate_id' ),
-					),
-				),
-				'show_in_index'       => false,
-			)
-		);
-	}
-
-	/**
-	 * Permissions callback for REST endpoint.
-	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return bool
-	 */
-	public function rest_api_permission_callback( $request ) {
-		return current_user_can(
-			'edit_post',
-			$request->get_param( 'id' )
-		);
-	}
-
-	/**
-	 * Validate post ID.
-	 *
-	 * @param int $input Post ID.
-	 * @return bool
-	 */
-	public function rest_api_validate_id( $input ) {
-		return is_numeric( $input );
-	}
-
-	/**
-	 * Schedule cleanup of post's excess revisions.
-	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response
-	 */
-	public function rest_api_schedule_purge( $request ) {
-		$result = wp_schedule_single_event(
-			time() + 3,
-			$this->cron_action,
-			array(
-				$request->get_param( 'id' ),
-			)
-		);
-
-		return rest_ensure_response( $result );
-	}
-
-	/**
-	 * Allow our meta to be edited from Gutenberg.
-	 *
-	 * @param bool   $protected If meta is protected.
-	 * @param string $meta_key  Meta key being checked.
-	 * @return false
-	 */
-	public function filter_is_protected_meta( $protected, $meta_key ) {
-		if ( $meta_key === $this->meta_key_limit ) {
-			return false;
-		}
-
-		return $protected;
-	}
-
-	/**
-	 * Register Gutenberg script.
-	 */
-	public function action_enqueue_block_editor_assets() {
-		$asset_data = require_once dirname( __DIR__ ) . '/assets/build/gutenberg.asset.php';
-
-		wp_enqueue_script(
-			$this->settings_section,
-			plugins_url(
-				'assets/build/gutenberg.js',
-				__DIR__
-			),
-			$asset_data['dependencies'],
-			$asset_data['version'],
-		);
 	}
 
 	/**
@@ -772,7 +550,7 @@ class WP_Revisions_Control {
 	 *
 	 * @return array
 	 */
-	private function get_post_types() {
+	public function get_post_types() {
 		if ( empty( self::$post_types ) ) {
 			foreach ( get_post_types() as $type ) {
 				if ( post_type_supports( $type, 'revisions' ) ) {
@@ -823,7 +601,7 @@ class WP_Revisions_Control {
 	 * @return int|string
 	 */
 	private function get_post_revisions_to_keep( $post_id ) {
-		$to_keep = get_post_meta( $post_id, $this->meta_key_limit, true );
+		$to_keep = get_post_meta( $post_id, WP_REVISIONS_CONTROL_LIMIT_META_KEY, true );
 
 		if ( empty( $to_keep ) || -1 === $to_keep || '-1' === $to_keep ) {
 			$to_keep = '';
@@ -832,15 +610,6 @@ class WP_Revisions_Control {
 		}
 
 		return $to_keep;
-	}
-
-	/**
-	 * Is the Gutenberg component enabled?
-	 *
-	 * @return bool
-	 */
-	private function use_gutenberg_component() {
-		return ! (bool) get_option( $this->setting_native_gutenberg, false );
 	}
 }
 

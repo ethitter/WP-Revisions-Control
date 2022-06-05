@@ -5,23 +5,20 @@
  * @package WP_Revisions_Control
  */
 
+use WP_Revisions_Control\Singleton;
+
 /**
  * Class WP_Revisions_Control_Bulk_Actions.
  */
 class WP_Revisions_Control_Bulk_Actions {
-	/**
-	 * Singleton.
-	 *
-	 * @var static
-	 */
-	private static $__instance;
+	use Singleton;
 
 	/**
 	 * Supported post types.
 	 *
 	 * @var array
 	 */
-	protected $post_types;
+	public static $post_types;
 
 	/**
 	 * Base for bulk action names.
@@ -38,37 +35,13 @@ class WP_Revisions_Control_Bulk_Actions {
 	protected $actions;
 
 	/**
-	 * Silence is golden!
-	 */
-	private function __construct() {}
-
-	/**
-	 * Singleton implementation.
-	 *
-	 * @param array $post_types Supported post types, used only on instantiation.
-	 * @return static
-	 */
-	public static function get_instance( $post_types = array() ) {
-		if ( ! is_a( static::$__instance, __CLASS__ ) ) {
-			static::$__instance = new self();
-
-			static::$__instance->setup( $post_types );
-		}
-
-		return static::$__instance;
-	}
-
-	/**
 	 * One-time actions.
-	 *
-	 * @param array $post_types Supported post types.
 	 */
-	public function setup( $post_types ) {
-		if ( empty( $post_types ) || ! is_array( $post_types ) ) {
+	public function setup() {
+		if ( empty( static::$post_types ) || ! is_array( static::$post_types ) ) {
 			return;
 		}
 
-		$this->post_types = $post_types;
 		$this->register_actions();
 
 		add_action( 'load-edit.php', array( $this, 'register_admin_hooks' ) );
@@ -104,9 +77,7 @@ class WP_Revisions_Control_Bulk_Actions {
 			return;
 		}
 
-		$post_types = array_keys( $this->post_types );
-
-		if ( ! in_array( $screen->post_type, $post_types, true ) ) {
+		if ( ! array_key_exists( $screen->post_type, static::$post_types ) ) {
 			return;
 		}
 

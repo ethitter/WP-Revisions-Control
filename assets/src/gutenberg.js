@@ -74,8 +74,8 @@ const PurgeModal = ( limit, manualPurge ) => {
 				</Modal>
 			) }
 		</>
-	)
-}
+	);
+};
 
 // TODO: switch to `useSelect` and `useDispatch`.
 const RevisionsControl = compose(
