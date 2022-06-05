@@ -5,6 +5,11 @@
  * @package WP_Revisions_Control
  */
 
+namespace WP_Revisions_Control\Tests;
+
+use WP_Revisions_Control;
+use WP_UnitTestCase;
+
 /**
  * Class TestMisc.
  */
