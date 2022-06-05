@@ -3,7 +3,7 @@ const { resolve } = require( 'path' );
 
 config.entry = {
 	'classic-editor': './assets/src/classic-editor.js',
-	'gutenberg': './assets/src/gutenberg.js',
+	gutenberg: './assets/src/gutenberg.js',
 };
 
 config.output.path = resolve( process.cwd(), 'assets/build' );
