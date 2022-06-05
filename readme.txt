@@ -33,13 +33,10 @@ Thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/), the plu
 = Where do I change the plugin's settings? =
 Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the **WP Revisions Control** section.
 
-= How do I turn off the Gutenberg component added in version 1.4? =
-Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the **Disable Gutenberg sidebar component** in the **WP Revisions Control** section.
-
 == Changelog ==
 
 = 1.4 =
-* Introduce native Gutenberg sidebar component for supported post types, along with a setting to revert to the previous metabox.
+* Introduce native Gutenberg sidebar component for supported post types.
 
 = 1.3 =
 * Add bulk actions to purge excess or all revisions.

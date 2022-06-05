@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: WP Revisions Control 1.4\n"
 "Report-Msgid-Bugs-To: "
 "https://wordpress.org/support/plugin/wp-revisions-control\n"
-"POT-Creation-Date: 2022-06-05 05:36:50+00:00\n"
+"POT-Creation-Date: 2022-06-05 21:22:10+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,41 +25,41 @@ msgstr ""
 "X-Textdomain-Support: yes\n"
 "X-Generator: grunt-wp-i18n 1.0.3\n"
 
-#: inc/class-wp-revisions-control-bulk-actions.php:84
+#: inc/class-block-editor.php:74
+msgid "Number of revisions to retain."
+msgstr ""
+
+#: inc/class-wp-revisions-control-bulk-actions.php:59
 msgid "Purge excess revisions"
 msgstr ""
 
-#: inc/class-wp-revisions-control-bulk-actions.php:89
+#: inc/class-wp-revisions-control-bulk-actions.php:64
 msgid "Purge ALL revisions"
 msgstr ""
 
-#: inc/class-wp-revisions-control-bulk-actions.php:269
+#: inc/class-wp-revisions-control-bulk-actions.php:242
 msgid "Purged all revisions."
 msgstr ""
 
-#: inc/class-wp-revisions-control-bulk-actions.php:276
+#: inc/class-wp-revisions-control-bulk-actions.php:249
 msgid "Purged excess revisions."
 msgstr ""
 
-#: inc/class-wp-revisions-control-bulk-actions.php:287
+#: inc/class-wp-revisions-control-bulk-actions.php:260
 msgid "WP Revisions Control encountered an unspecified error."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:166
-msgid "Gutenberg"
-msgstr ""
-
-#: inc/class-wp-revisions-control.php:195
+#: inc/class-wp-revisions-control.php:138
 msgid ""
 "Set the number of revisions to save for each post type listed. To retain "
 "all revisions for a given post type, leave the field empty."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:196
+#: inc/class-wp-revisions-control.php:139
 msgid "If a post type isn't listed, revisions are not enabled for that post type."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:207
+#: inc/class-wp-revisions-control.php:150
 #. translators: 1. Filter tag.
 msgid ""
 "A local change is causing this plugin's functionality to run at a priority "
@@ -67,75 +67,61 @@ msgid ""
 "please unhook any functions from the %1$s filter."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:249
-msgid "Disable Gutenberg sidebar component"
-msgstr ""
-
-#: inc/class-wp-revisions-control.php:258
-msgid ""
-"If checked, the plugin's previous interface will appear below the post "
-"content in Gutenberg, rather than appearing in the sidebar."
-msgstr ""
-
-#: inc/class-wp-revisions-control.php:383
+#: inc/class-wp-revisions-control.php:278
 msgid "Revisions"
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:416
+#: inc/class-wp-revisions-control.php:310
 msgid "Processing&hellip;"
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:417
+#: inc/class-wp-revisions-control.php:311
 msgid "Are you sure you want to remove revisions from this post?"
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:418
+#: inc/class-wp-revisions-control.php:312
 msgid "Autosave"
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:419
+#: inc/class-wp-revisions-control.php:313
 msgid "There are no revisions to remove."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:420
+#: inc/class-wp-revisions-control.php:314
 msgid "An error occurred. Please refresh the page and try again."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:440
+#: inc/class-wp-revisions-control.php:334
 msgid "Purge these revisions"
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:446
+#: inc/class-wp-revisions-control.php:340
 #. translators: 1. Text input field.
 msgid ""
 "Limit this post to %1$s revisions. Leave this field blank for default "
 "behavior."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:471
+#: inc/class-wp-revisions-control.php:365
 msgid "No post ID was provided. Please refresh the page and try again."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:473
+#: inc/class-wp-revisions-control.php:367
 msgid "Invalid request. Please refresh the page and try again."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:475
+#: inc/class-wp-revisions-control.php:369
 msgid "You are not allowed to edit this post."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:507
+#: inc/class-wp-revisions-control.php:401
 #. translators: 1. Number of removed revisions, already formatted for locale.
 msgid "Removed %1$s revisions associated with this post."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:533
-#: inc/class-wp-revisions-control.php:545
+#: inc/class-wp-revisions-control.php:427
+#: inc/class-wp-revisions-control.php:439
 msgid "No revisions to remove."
-msgstr ""
-
-#: inc/class-wp-revisions-control.php:622
-msgid "Number of revisions to retain."
 msgstr ""
 
 #. Plugin Name of the plugin/theme
