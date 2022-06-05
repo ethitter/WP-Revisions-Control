@@ -1,3 +1,5 @@
+import jQuery from 'jquery';
+
 ( function( $ ) {
 	$( document ).ready( function() {
 		var purge_button = $( '#' + wp_revisions_control.namespace + ' .button.purge' ),

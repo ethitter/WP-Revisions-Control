@@ -394,17 +394,16 @@ class WP_Revisions_Control {
 		);
 
 		// A bit of JS for us.
-		$handle = 'wp-revisions-control-post';
+		$handle     = 'wp-revisions-control-post';
+		$asset_data = require_once dirname( __DIR__ ) . '/assets/build/classic-editor.asset.php';
 		wp_enqueue_script(
 			$handle,
 			plugins_url(
-				'dist/js/classic-editor.js',
+				'assets/build/classic-editor.js',
 				__DIR__
 			),
-			array(
-				'jquery',
-			),
-			2013120501,
+			$asset_data['dependencies'],
+			$asset_data['version'],
 			true
 		);
 		wp_localize_script(
@@ -706,21 +705,16 @@ class WP_Revisions_Control {
 	 * Register Gutenberg script.
 	 */
 	public function action_enqueue_block_editor_assets() {
+		$asset_data = require_once dirname( __DIR__ ) . '/assets/build/gutenberg.asset.php';
+
 		wp_enqueue_script(
 			$this->settings_section,
 			plugins_url(
-				'dist/js/gutenberg.js',
+				'assets/build/gutenberg.js',
 				__DIR__
 			),
-			array(
-				'wp-components',
-				'wp-compose',
-				'wp-data',
-				'wp-edit-post',
-				'wp-i18n',
-				'wp-plugins',
-			),
-			2021032701
+			$asset_data['dependencies'],
+			$asset_data['version'],
 		);
 	}
 
