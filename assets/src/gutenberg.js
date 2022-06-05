@@ -16,7 +16,6 @@ const Render = ( { limit, manualPurge, showPurgeButton, updateMeta } ) => (
 		title={ __( 'WP Revisions Control', 'wp_revisions_control' ) }
 		className={ slug }
 	>
-		{/* TODO: switch to InputControl when it becomes available. */}
 		<TextControl
 			label={ __( 'Number of revisions to retain:', 'wp_revisions_control' ) }
 			help={ __( 'Leave blank to keep all revisions.', 'wp_revisions_control' ) }
@@ -36,17 +35,20 @@ const PurgeModal = ( limit, manualPurge ) => {
 		closeModal();
 		manualPurge();
 	};
+	const parsedLimit = parseInt( limit, 10 );
 
-	const modalText = sprintf(
-		/* translators: 1. Number of revisions to keep. */
-		_n(
-			'This will remove all but the most-recent revision.',
-			'This will remove all but the %1$d most-recent revisions.',
-			parseInt( limit ),
-			'wp_revisions_control'
-		),
-		limit
-	);
+	const modalText = 0 === parsedLimit
+		? __( 'This will remove all revisions.', 'wp_revisions_control' )
+		: sprintf(
+			/* translators: 1. Number of revisions to keep. */
+			_n(
+				'This will remove all but the most-recent revision.',
+				'This will remove all but the %1$d most-recent revisions.',
+				parsedLimit,
+				'wp_revisions_control'
+			),
+			limit
+		);
 
 	return (
 		<>
@@ -64,12 +66,14 @@ const PurgeModal = ( limit, manualPurge ) => {
 						{ modalText }
 					</p>
 
-					<Button isSecondary onClick={ closeModal }>
-						{ __( 'Cancel', 'wp_revisions_control' ) }
-					</Button>
-
 					<Button isPrimary onClick={ closeModalAndPurge }>
 						{ __( 'Purge', 'wp_revisions_control' ) }
+					</Button>
+
+					&nbsp;
+
+					<Button isSecondary onClick={ closeModal }>
+						{ __( 'Cancel', 'wp_revisions_control' ) }
 					</Button>
 				</Modal>
 			) }
