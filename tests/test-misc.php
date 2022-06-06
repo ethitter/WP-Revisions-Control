@@ -1,9 +1,14 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Test miscellaneous methods.
  *
  * @package WP_Revisions_Control
  */
+
+namespace WP_Revisions_Control\Tests;
+
+use WP_Revisions_Control;
+use WP_UnitTestCase;
 
 /**
  * Class TestMisc.

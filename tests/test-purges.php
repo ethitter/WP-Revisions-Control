@@ -1,9 +1,14 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Test purge methods.
  *
  * @package WP_Revisions_Control
  */
+
+namespace WP_Revisions_Control\Tests;
+
+use WP_Revisions_Control;
+use WP_UnitTestCase;
 
 /**
  * Class TestPurges.
@@ -94,6 +99,46 @@ class TestPurges extends WP_UnitTestCase {
 		);
 
 		$purge               = WP_Revisions_Control::get_instance()->do_purge_excess( $post_id );
+		$revisions_remaining = count( wp_get_post_revisions( $post_id ) );
+
+		$this->assertEquals(
+			4,
+			$revisions_remaining,
+			'Failed to assert that specified number of revisions were retained.'
+		);
+
+		$this->assertEquals(
+			6,
+			$purge['count'],
+			'Failed to assert that response includes expected count of purged revisions.'
+		);
+	}
+
+	/**
+	 * Test revision purging with manual override (Gutenberg).
+	 */
+	public function test_purge_excess_gutenberg() {
+		$post_id    = $this->factory->post->create();
+		$iterations = 10;
+		$limit      = 4;
+
+		for ( $i = 0; $i < $iterations; $i++ ) {
+			wp_update_post(
+				array(
+					'ID'           => $post_id,
+					'post_content' => wp_rand(),
+				)
+			);
+		}
+
+		$revisions_to_purge = count( wp_get_post_revisions( $post_id ) );
+		$this->assertEquals(
+			$iterations,
+			$revisions_to_purge,
+			'Failed to assert that there are revisions to purge.'
+		);
+
+		$purge               = WP_Revisions_Control::get_instance()->do_purge_excess( $post_id, $limit );
 		$revisions_remaining = count( wp_get_post_revisions( $post_id ) );
 
 		$this->assertEquals(

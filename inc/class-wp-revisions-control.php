@@ -5,16 +5,14 @@
  * @package WP_Revisions_Control
  */
 
+use WP_Revisions_Control\Block_Editor;
+use WP_Revisions_Control\Singleton;
+
 /**
  * Class WP_Revisions_Control.
  */
 class WP_Revisions_Control {
-	/**
-	 * Singleton.
-	 *
-	 * @var static
-	 */
-	private static $__instance;
+	use Singleton;
 
 	/**
 	 * Filter priority.
@@ -72,31 +70,13 @@ class WP_Revisions_Control {
 	private $meta_key_limit = '_wp_rev_ctl_limit';
 
 	/**
-	 * Silence is golden!
-	 */
-	private function __construct() {}
-
-	/**
-	 * Singleton implementation.
-	 *
-	 * @return static
-	 */
-	public static function get_instance() {
-		if ( ! is_a( static::$__instance, __CLASS__ ) ) {
-			static::$__instance = new self();
-
-			static::$__instance->setup();
-		}
-
-		return static::$__instance;
-	}
-
-	/**
 	 * Register actions and filters at `init` so others can interact, if desired.
 	 */
 	private function setup() {
 		add_action( 'plugins_loaded', array( $this, 'action_plugins_loaded' ) );
 		add_action( 'init', array( $this, 'action_init' ) );
+
+		Block_Editor::get_instance();
 	}
 
 	/**
@@ -142,7 +122,7 @@ class WP_Revisions_Control {
 		add_action( 'save_post', array( $this, 'action_save_post' ) );
 
 		// Bulk actions.
-		WP_Revisions_Control_Bulk_Actions::get_instance( $post_types );
+		WP_Revisions_Control_Bulk_Actions::get_instance();
 	}
 
 	/**
@@ -205,14 +185,14 @@ class WP_Revisions_Control {
 				$type_length = strlen( $to_keep );
 
 				if ( 0 === $type_length ) {
-					$to_keep = -1;
+					$to_keep = - 1;
 				} else {
 					$to_keep = (int) $to_keep;
 				}
 
 				// Lowest possible value is -1, used to indicate infinite revisions are stored.
-				if ( -1 > $to_keep ) {
-					$to_keep = -1;
+				if ( - 1 > $to_keep ) {
+					$to_keep = - 1;
 				}
 
 				$options_sanitized[ $post_type ] = $to_keep;
@@ -252,7 +232,7 @@ class WP_Revisions_Control {
 	 * @return int
 	 */
 	public function filter_wp_revisions_to_keep( $qty, $post ) {
-		$post_limit = get_post_meta( $post->ID, $this->meta_key_limit, true );
+		$post_limit = get_post_meta( $post->ID, WP_REVISIONS_CONTROL_LIMIT_META_KEY, true );
 
 		if ( 0 < strlen( $post_limit ) ) {
 			$qty = $post_limit;
@@ -275,48 +255,68 @@ class WP_Revisions_Control {
 	/**
 	 * Override Core's revisions metabox.
 	 *
-	 * @param string $post_type Post type.
-	 * @param object $post      Post object.
+	 * @param string  $post_type Post type.
+	 * @param WP_Post $post      Post object.
 	 */
 	public function action_add_meta_boxes( $post_type, $post ) {
-		if ( post_type_supports( $post_type, 'revisions' ) && 'auto-draft' !== get_post_status() && count( wp_get_post_revisions( $post ) ) > 1 ) {
-			// Replace the metabox.
-			remove_meta_box( 'revisionsdiv', null, 'normal' );
-			add_meta_box(
-				'revisionsdiv-wp-rev-ctl',
-				__(
-					'Revisions',
-					'wp_revisions_control'
-				),
-				array(
-					$this,
-					'revisions_meta_box',
-				),
-				null,
-				'normal',
-				'core'
-			);
-
-			// A bit of JS for us.
-			$handle = 'wp-revisions-control-post';
-			wp_enqueue_script( $handle, plugins_url( 'js/post.js', __DIR__ ), array( 'jquery' ), '20131205', true );
-			wp_localize_script(
-				$handle,
-				$this->settings_section,
-				array(
-					'namespace'       => $this->settings_section,
-					'action_base'     => $this->settings_section,
-					'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
-					'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp_revisions_control' ),
-					'autosave'        => __( 'Autosave', 'wp_revisions_control' ),
-					'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp_revisions_control' ) ),
-					'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' ),
-				)
-			);
-
-			// Add some styling to our metabox additions.
-			add_action( 'admin_head', array( $this, 'action_admin_head' ), 999 );
+		if (
+			! post_type_supports( $post_type, 'revisions' )
+			|| 'auto-draft' === get_post_status()
+			|| (
+				function_exists( 'use_block_editor_for_post' )
+				&& use_block_editor_for_post( $post )
+			)
+			|| count( wp_get_post_revisions( $post ) ) < 1
+		) {
+			return;
 		}
+
+		// Replace the metabox.
+		remove_meta_box( 'revisionsdiv', null, 'normal' );
+		add_meta_box(
+			'revisionsdiv-wp-rev-ctl',
+			__(
+				'Revisions',
+				'wp_revisions_control'
+			),
+			array(
+				$this,
+				'revisions_meta_box',
+			),
+			null,
+			'normal',
+			'core'
+		);
+
+		// A bit of JS for us.
+		$handle     = 'wp-revisions-control-post';
+		$asset_data = require_once dirname( __DIR__ ) . '/assets/build/classic-editor.asset.php';
+		wp_enqueue_script(
+			$handle,
+			plugins_url(
+				'assets/build/classic-editor.js',
+				__DIR__
+			),
+			$asset_data['dependencies'],
+			$asset_data['version'],
+			true
+		);
+		wp_localize_script(
+			$handle,
+			$this->settings_section,
+			array(
+				'namespace'       => $this->settings_section,
+				'action_base'     => $this->settings_section,
+				'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
+				'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp_revisions_control' ),
+				'autosave'        => __( 'Autosave', 'wp_revisions_control' ),
+				'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp_revisions_control' ) ),
+				'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' ),
+			)
+		);
+
+		// Add some styling to our metabox additions.
+		add_action( 'admin_head', array( $this, 'action_admin_head' ), 999 );
 	}
 
 	/**
@@ -413,15 +413,19 @@ class WP_Revisions_Control {
 	/**
 	 * Remove any revisions in excess of a post's limit.
 	 *
-	 * @param int $post_id Post ID to purge of excess revisions.
+	 * @param int      $post_id        Post ID to purge of excess revisions.
+	 * @param int|null $limit_override Optional. Override post's revisions
+	 *                                 limit.
 	 * @return array
 	 */
-	public function do_purge_excess( $post_id ) {
+	public function do_purge_excess( $post_id, $limit_override = null ) {
 		$response = array(
 			'count' => 0,
 		);
 
-		$to_keep = wp_revisions_to_keep( get_post( $post_id ) );
+		$to_keep = null !== $limit_override
+			? $limit_override
+			: wp_revisions_to_keep( get_post( $post_id ) );
 
 		if ( $to_keep < 0 ) {
 			$response['success'] = __(
@@ -467,9 +471,9 @@ class WP_Revisions_Control {
 			$limit = (int) $_POST[ $qty ];
 
 			if ( -1 === $limit || empty( $limit ) ) {
-				delete_post_meta( $post_id, $this->meta_key_limit );
+				delete_post_meta( $post_id, WP_REVISIONS_CONTROL_LIMIT_META_KEY );
 			} else {
-				update_post_meta( $post_id, $this->meta_key_limit, absint( $limit ) );
+				update_post_meta( $post_id, WP_REVISIONS_CONTROL_LIMIT_META_KEY, absint( $limit ) );
 			}
 		}
 	}
@@ -549,7 +553,7 @@ class WP_Revisions_Control {
 	 *
 	 * @return array
 	 */
-	private function get_post_types() {
+	public function get_post_types() {
 		if ( empty( self::$post_types ) ) {
 			foreach ( get_post_types() as $type ) {
 				if ( post_type_supports( $type, 'revisions' ) ) {
@@ -600,7 +604,7 @@ class WP_Revisions_Control {
 	 * @return int|string
 	 */
 	private function get_post_revisions_to_keep( $post_id ) {
-		$to_keep = get_post_meta( $post_id, $this->meta_key_limit, true );
+		$to_keep = get_post_meta( $post_id, WP_REVISIONS_CONTROL_LIMIT_META_KEY, true );
 
 		if ( empty( $to_keep ) || -1 === $to_keep || '-1' === $to_keep ) {
 			$to_keep = '';

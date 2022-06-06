@@ -1,10 +1,10 @@
 # WP Revisions Control #
-**Contributors:** ethitter  
+**Contributors:** [ethitter](https://profiles.wordpress.org/ethitter/)  
 **Donate link:** https://ethitter.com/donate/  
 **Tags:** revision, revisions, admin  
 **Requires at least:** 3.6  
-**Tested up to:** 5.9  
-**Stable tag:** 1.3  
+**Tested up to:** 6.0  
+**Stable tag:** 1.4  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -35,6 +35,9 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 
 ## Changelog ##
 
+### 1.4 ###
+* Introduce native Gutenberg sidebar component for supported post types.
+
 ### 1.3 ###
 * Add bulk actions to purge excess or all revisions.
 * Introduce unit tests.
@@ -63,8 +66,11 @@ For any post type that supports revisions, you can now limit the number of revis
 ## Screenshots ##
 
 ### 1. The plugin's settings section, found under **Settings > Writing**. ###
-![The plugin's settings section, found under **Settings > Writing**.](http://ps.w.org/wp-revisions-control/assets/screenshot-1.png)
+![The plugin's settings section, found under **Settings > Writing**.](https://git-cdn.e15r.co/wp-plugins/wp-revisions-control/-/raw/master/.wordpress-org/screenshot-1.png)
 
-### 2. The post-level controls provided in version 1.2. ###
-![The post-level controls provided in version 1.2.](http://ps.w.org/wp-revisions-control/assets/screenshot-2.png)
+### 2. The post-level controls for the Classic Editor provided in version 1.2. ###
+![The post-level controls for the Classic Editor provided in version 1.2.](https://git-cdn.e15r.co/wp-plugins/wp-revisions-control/-/raw/master/.wordpress-org/screenshot-2.png)
+
+### 3. The post-level controls for the Block Editor provided in version 1.4. ###
+![The post-level controls for the Block Editor provided in version 1.4.](https://git-cdn.e15r.co/wp-plugins/wp-revisions-control/-/raw/master/.wordpress-org/screenshot-3.png)
 

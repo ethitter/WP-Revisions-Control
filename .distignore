@@ -4,6 +4,7 @@
 .git
 .gitignore
 .gitlab-ci.yml
+.nvmrc
 .travis.yml
 .wordpress-org/*
 .DS_Store
@@ -26,6 +27,7 @@ phpcs.xml
 .phpcs.xml.dist
 phpcs.xml.dist
 README.md
+assets/src/*
 wp-cli.local.yml
 yarn.lock
 tests
@@ -34,3 +36,4 @@ node_modules
 *.sql
 *.tar.gz
 *.zip
+webpack.config.js
