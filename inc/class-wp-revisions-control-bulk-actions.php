@@ -58,12 +58,12 @@ class WP_Revisions_Control_Bulk_Actions {
 
 		$actions[ $this->action_base . 'purge_excess' ] = __(
 			'Purge excess revisions',
-			'wp_revisions_control'
+			'wp-revisions-control'
 		);
 
 		$actions[ $this->action_base . 'purge_all' ] = __(
 			'Purge ALL revisions',
-			'wp_revisions_control'
+			'wp-revisions-control'
 		);
 
 		$this->actions = $actions;
@@ -241,14 +241,14 @@ class WP_Revisions_Control_Bulk_Actions {
 			case 'purge_all':
 				$message = __(
 					'Purged all revisions.',
-					'wp_revisions_control'
+					'wp-revisions-control'
 				);
 				break;
 
 			case 'purge_excess':
 				$message = __(
 					'Purged excess revisions.',
-					'wp_revisions_control'
+					'wp-revisions-control'
 				);
 				break;
 
@@ -259,7 +259,7 @@ class WP_Revisions_Control_Bulk_Actions {
 			case 'missing':
 				$message = __(
 					'WP Revisions Control encountered an unspecified error.',
-					'wp_revisions_control'
+					'wp-revisions-control'
 				);
 				$type    = 'error';
 				break;

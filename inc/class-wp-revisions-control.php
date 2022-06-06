@@ -84,7 +84,7 @@ class WP_Revisions_Control {
 	 */
 	public function action_plugins_loaded() {
 		load_plugin_textdomain(
-			'wp_revisions_control',
+			'wp-revisions-control',
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);
@@ -135,8 +135,8 @@ class WP_Revisions_Control {
 	 */
 	public function settings_section_intro() {
 		?>
-		<p><?php esc_html_e( 'Set the number of revisions to save for each post type listed. To retain all revisions for a given post type, leave the field empty.', 'wp_revisions_control' ); ?></p>
-		<p><?php esc_html_e( 'If a post type isn\'t listed, revisions are not enabled for that post type.', 'wp_revisions_control' ); ?></p>
+		<p><?php esc_html_e( 'Set the number of revisions to save for each post type listed. To retain all revisions for a given post type, leave the field empty.', 'wp-revisions-control' ); ?></p>
+		<p><?php esc_html_e( 'If a post type isn\'t listed, revisions are not enabled for that post type.', 'wp-revisions-control' ); ?></p>
 		<?php
 
 		// Display a note if the plugin priority is other than the default.
@@ -149,7 +149,7 @@ class WP_Revisions_Control {
 					/* translators: 1. Filter tag. */
 					esc_html__(
 						'A local change is causing this plugin\'s functionality to run at a priority other than the default. If you experience difficulties with the plugin, please unhook any functions from the %1$s filter.',
-						'wp_revisions_control'
+						'wp-revisions-control'
 					),
 					'<code>wp_revisions_control_priority</code>'
 				);
@@ -277,7 +277,7 @@ class WP_Revisions_Control {
 			'revisionsdiv-wp-rev-ctl',
 			__(
 				'Revisions',
-				'wp_revisions_control'
+				'wp-revisions-control'
 			),
 			array(
 				$this,
@@ -307,11 +307,11 @@ class WP_Revisions_Control {
 			array(
 				'namespace'       => $this->settings_section,
 				'action_base'     => $this->settings_section,
-				'processing_text' => __( 'Processing&hellip;', 'wp_revisions_control' ),
-				'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp_revisions_control' ),
-				'autosave'        => __( 'Autosave', 'wp_revisions_control' ),
-				'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp_revisions_control' ) ),
-				'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp_revisions_control' ),
+				'processing_text' => __( 'Processing&hellip;', 'wp-revisions-control' ),
+				'ays'             => __( 'Are you sure you want to remove revisions from this post?', 'wp-revisions-control' ),
+				'autosave'        => __( 'Autosave', 'wp-revisions-control' ),
+				'nothing_text'    => wpautop( __( 'There are no revisions to remove.', 'wp-revisions-control' ) ),
+				'error'           => __( 'An error occurred. Please refresh the page and try again.', 'wp-revisions-control' ),
 			)
 		);
 
@@ -331,7 +331,7 @@ class WP_Revisions_Control {
 		<div id="<?php echo esc_attr( $this->settings_section ); ?>">
 			<h4>WP Revisions Control</h4>
 
-			<p class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>"><?php _e( 'Purge these revisions', 'wp_revisions_control' ); ?></p>
+			<p class="button purge" data-postid="<?php the_ID(); ?>" data-nonce="<?php echo esc_attr( wp_create_nonce( $this->settings_section . '_purge' ) ); ?>"><?php _e( 'Purge these revisions', 'wp-revisions-control' ); ?></p>
 
 			<p>
 				<?php
@@ -339,7 +339,7 @@ class WP_Revisions_Control {
 					/* translators: 1. Text input field. */
 					esc_html__(
 						'Limit this post to %1$s revisions. Leave this field blank for default behavior.',
-						'wp_revisions_control'
+						'wp-revisions-control'
 					),
 					'<input type="text" name="' . esc_attr( $this->settings_section ) . '_qty" value="' . esc_attr( $this->get_post_revisions_to_keep( $post->ID ) ) . '" id="' . esc_attr( $this->settings_section ) . '_qty" size="2" />'
 				);
@@ -362,11 +362,11 @@ class WP_Revisions_Control {
 
 		// Check for necessary data and capabilities.
 		if ( ! $post_id ) {
-			$response['error'] = __( 'No post ID was provided. Please refresh the page and try again.', 'wp_revisions_control' );
+			$response['error'] = __( 'No post ID was provided. Please refresh the page and try again.', 'wp-revisions-control' );
 		} elseif ( ! check_ajax_referer( $this->settings_section . '_purge', 'nonce', false ) ) {
-			$response['error'] = __( 'Invalid request. Please refresh the page and try again.', 'wp_revisions_control' );
+			$response['error'] = __( 'Invalid request. Please refresh the page and try again.', 'wp-revisions-control' );
 		} elseif ( ! current_user_can( 'edit_post', $post_id ) ) {
-			$response['error'] = __( 'You are not allowed to edit this post.', 'wp_revisions_control' );
+			$response['error'] = __( 'You are not allowed to edit this post.', 'wp-revisions-control' );
 		}
 
 		// Request is valid if $response is still empty, as no errors arose above.
@@ -400,7 +400,7 @@ class WP_Revisions_Control {
 			/* translators: 1. Number of removed revisions, already formatted for locale. */
 			esc_html__(
 				'Removed %1$s revisions associated with this post.',
-				'wp_revisions_control'
+				'wp-revisions-control'
 			),
 			number_format_i18n( $count, 0 )
 		);
@@ -430,7 +430,7 @@ class WP_Revisions_Control {
 		if ( $to_keep < 0 ) {
 			$response['success'] = __(
 				'No revisions to remove.',
-				'wp_revisions_control'
+				'wp-revisions-control'
 			);
 
 			return $response;
@@ -442,7 +442,7 @@ class WP_Revisions_Control {
 		if ( $starting_count <= $to_keep ) {
 			$response['success'] = __(
 				'No revisions to remove.',
-				'wp_revisions_control'
+				'wp-revisions-control'
 			);
 
 			return $response;
