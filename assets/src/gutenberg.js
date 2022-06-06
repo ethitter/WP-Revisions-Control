@@ -25,17 +25,17 @@ const slug = 'wp-revisions-control';
 const Render = ( { limit, manualPurge, showPurgeButton, updateMeta } ) => (
 	<PluginDocumentSettingPanel
 		name={ slug }
-		title={ __( 'WP Revisions Control', 'wp_revisions_control' ) }
+		title={ __( 'WP Revisions Control', 'wp-revisions-control' ) }
 		className={ slug }
 	>
 		<TextControl
 			label={ __(
 				'Number of revisions to retain:',
-				'wp_revisions_control'
+				'wp-revisions-control'
 			) }
 			help={ __(
 				'Leave blank to keep all revisions.',
-				'wp_revisions_control'
+				'wp-revisions-control'
 			) }
 			value={ limit }
 			onChange={ updateMeta }
@@ -65,7 +65,7 @@ const PurgeModal = ( limit, manualPurge ) => {
 
 	const modalText =
 		0 === parsedLimit
-			? __( 'This will remove all revisions.', 'wp_revisions_control' )
+			? __( 'This will remove all revisions.', 'wp-revisions-control' )
 			: // eslint-disable-next-line @wordpress/valid-sprintf
 			  sprintf(
 					/* translators: 1. Number of revisions to keep. */
@@ -73,7 +73,7 @@ const PurgeModal = ( limit, manualPurge ) => {
 						'This will remove all but the most-recent revision.',
 						'This will remove all but the %1$d most-recent revisions.',
 						parsedLimit,
-						'wp_revisions_control'
+						'wp-revisions-control'
 					),
 					limit
 			  );
@@ -81,25 +81,25 @@ const PurgeModal = ( limit, manualPurge ) => {
 	return (
 		<>
 			<Button isSecondary onClick={ openModal }>
-				{ __( 'Purge excess revisions', 'wp_revisions_control' ) }
+				{ __( 'Purge excess revisions', 'wp-revisions-control' ) }
 			</Button>
 
 			{ isOpen && (
 				<Modal
 					title={ __(
 						'Purge excess revisions',
-						'wp_revisions_control'
+						'wp-revisions-control'
 					) }
 					contentLabel={ modalText }
 					onRequestClose={ closeModal }
 				>
 					<p>{ modalText }</p>
 					<Button isPrimary onClick={ closeModalAndPurge }>
-						{ __( 'Purge', 'wp_revisions_control' ) }
+						{ __( 'Purge', 'wp-revisions-control' ) }
 					</Button>
 					&nbsp;
 					<Button isSecondary onClick={ closeModal }>
-						{ __( 'Cancel', 'wp_revisions_control' ) }
+						{ __( 'Cancel', 'wp-revisions-control' ) }
 					</Button>
 				</Modal>
 			) }
@@ -143,13 +143,13 @@ const RevisionsControl = compose( [
 					noticeType = 'success';
 					noticeText = __(
 						'Excess revisions scheduled for removal.',
-						'wp_revisions_control'
+						'wp-revisions-control'
 					);
 				} else {
 					noticeType = 'error';
 					noticeText = __(
 						'Failed to schedule excess revisions for removal.',
-						'wp_revisions_control'
+						'wp-revisions-control'
 					);
 				}
 

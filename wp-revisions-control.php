@@ -6,7 +6,7 @@
  * Author: Erick Hitter
  * Version: 1.4
  * Author URI: https://ethitter.com/
- * Text Domain: wp_revisions_control
+ * Text Domain: wp-revisions-control
  * Domain Path: /languages/
  *
  * @package WP_Revisions_Control

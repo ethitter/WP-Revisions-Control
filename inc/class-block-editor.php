@@ -57,7 +57,7 @@ class Block_Editor {
 					'show_in_rest'   => true,
 					'description'    => __(
 						'Number of revisions to retain.',
-						'wp_revisions_control'
+						'wp-revisions-control'
 					),
 				)
 			);

@@ -7,7 +7,7 @@ module.exports = function ( grunt ) {
 
 		addtextdomain: {
 			options: {
-				textdomain: 'wp_revisions_control',
+				textdomain: 'wp-revisions-control',
 			},
 			update_all_domains: {
 				options: {
