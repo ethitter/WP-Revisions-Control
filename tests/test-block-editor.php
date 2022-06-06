@@ -1,4 +1,4 @@
-<?php
+<?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Test block-editor features.
  *
@@ -23,15 +23,18 @@ class TestBlockEditor extends WP_UnitTestCase {
 	 * @covers ::action_rest_api_init()
 	 */
 	public function test_action_rest_api_init() {
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		global $wp_meta_keys, $wp_rest_server;
 		$wp_meta_keys   = null;
 		$wp_rest_server = null;
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 
 		$object_type    = 'post';
 		$object_subtype = 'post';
 
 		// Prevent `_doing_it_wrong()` notice from `register_rest_route()`.
 		remove_all_actions( 'rest_api_init' );
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		do_action( 'rest_api_init' );
 
 		$this->assertEmpty(
@@ -92,7 +95,7 @@ class TestBlockEditor extends WP_UnitTestCase {
 		$request = new WP_REST_Request();
 		$request->set_param( 'id', $post_id );
 
-		_set_cron_array( [] );
+		_set_cron_array( array() );
 
 		$response = Block_Editor::get_instance()->rest_api_schedule_purge( $request );
 		$this->assertTrue(
@@ -132,7 +135,7 @@ class TestBlockEditor extends WP_UnitTestCase {
 		$request->set_param( 'id', $post_id );
 		$request->set_param( 'limit_override', $limit_override );
 
-		_set_cron_array( [] );
+		_set_cron_array( array() );
 
 		$response = Block_Editor::get_instance()->rest_api_schedule_purge( $request );
 		$this->assertTrue(
