@@ -35,6 +35,10 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 
 ## Changelog ##
 
+### 1.4.1 ###
+* Update translation text domain to `wp-revisions-control`, conforming to WordPress standards.
+* Add Polish translation thanks to [Maciej Gryniuk](https://github.com/odie2).
+
 ### 1.4 ###
 * Introduce block-editor (Gutenberg) sidebar component for supported post types.
 
@@ -53,6 +57,9 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 * Initial public release
 
 ## Upgrade Notice ##
+
+### 1.4.1 ###
+Updates translation text domain to `wp-revisions-control`, conforming to WordPress standards.
 
 ### 1.4 ###
 Introduces block-editor (Gutenberg) sidebar component for supported post types.
