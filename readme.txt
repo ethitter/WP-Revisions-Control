@@ -36,7 +36,7 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 == Changelog ==
 
 = 1.4 =
-* Introduce native Gutenberg sidebar component for supported post types.
+* Introduce block-editor (Gutenberg) sidebar component for supported post types.
 
 = 1.3 =
 * Add bulk actions to purge excess or all revisions.
@@ -53,6 +53,9 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 * Initial public release
 
 == Upgrade Notice ==
+
+= 1.4 =
+Introduces block-editor (Gutenberg) sidebar component for supported post types.
 
 = 1.3 =
 Introduces bulk actions for purging revisions, along with unit tests. The plugin also conforms to coding standards.
