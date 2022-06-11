@@ -149,6 +149,12 @@ class Block_Editor {
 	 * Register Gutenberg script.
 	 */
 	public function action_enqueue_block_editor_assets() {
+		global $pagenow;
+
+		if ( 'widgets.php' === $pagenow ) {
+			return;
+		}
+
 		$handle     = 'wp-revisions-control-block-editor';
 		$asset_data = require_once dirname( __DIR__ ) . '/assets/build/gutenberg.asset.php';
 

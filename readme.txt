@@ -4,7 +4,7 @@ Donate link: https://ethitter.com/donate/
 Tags: revision, revisions, admin
 Requires at least: 3.6
 Tested up to: 6.0
-Stable tag: 1.4.1
+Stable tag: 1.4.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -35,6 +35,9 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 
 == Changelog ==
 
+= 1.4.2 =
+* Fix notice appearing on Widgets Block Editor.
+
 = 1.4.1 =
 * Update translation text domain to `wp-revisions-control`, conforming to WordPress standards.
 * Add Polish translation thanks to [Maciej Gryniuk](https://github.com/odie2).
@@ -57,6 +60,9 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 * Initial public release
 
 == Upgrade Notice ==
+
+= 1.4.2 =
+Fixes notice appearing on Widgets Block Editor.
 
 = 1.4.1 =
 Updates translation text domain to `wp-revisions-control`, conforming to WordPress standards.
