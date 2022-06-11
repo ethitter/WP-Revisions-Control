@@ -38,7 +38,7 @@ class TestUI extends WP_UnitTestCase {
 		WP_Revisions_Control::get_instance()->revisions_meta_box( get_post( $post_id ) );
 		$meta_box = ob_get_clean();
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'value=""',
 			$meta_box,
 			'Failed to assert that meta box has no value when no setting exists.'
@@ -56,7 +56,7 @@ class TestUI extends WP_UnitTestCase {
 		WP_Revisions_Control::get_instance()->revisions_meta_box( get_post( $post_id ) );
 		$meta_box = ob_get_clean();
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'value=""',
 			$meta_box,
 			'Failed to assert that meta box has no value when no limit exists.'
@@ -78,7 +78,7 @@ class TestUI extends WP_UnitTestCase {
 		$name_format  = 'name="%1$s[%2$s]"';
 		$value_format = 'value=""';
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			sprintf(
 				$name_format,
 				static::$settings_section,
@@ -88,7 +88,7 @@ class TestUI extends WP_UnitTestCase {
 			'Failed to assert that post field had correct name for post type.'
 		);
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			sprintf(
 				$name_format,
 				static::$settings_section,
@@ -98,13 +98,13 @@ class TestUI extends WP_UnitTestCase {
 			'Failed to assert that page field had correct name for post type.'
 		);
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			$value_format,
 			$post_field,
 			'Failed to assert that post field had correct value.'
 		);
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			$value_format,
 			$page_field,
 			'Failed to assert that page field had correct value.'
@@ -131,7 +131,7 @@ class TestUI extends WP_UnitTestCase {
 		$name_format  = 'name="%1$s[%2$s]"';
 		$value_format = 'value="%1$s"';
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			sprintf(
 				$name_format,
 				static::$settings_section,
@@ -141,7 +141,7 @@ class TestUI extends WP_UnitTestCase {
 			'Failed to assert that post field had correct name for post type.'
 		);
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			sprintf(
 				$value_format,
 				$value
@@ -171,7 +171,7 @@ class TestUI extends WP_UnitTestCase {
 		$name_format  = 'name="%1$s[%2$s]"';
 		$value_format = 'value=""';
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			sprintf(
 				$name_format,
 				static::$settings_section,
@@ -181,7 +181,7 @@ class TestUI extends WP_UnitTestCase {
 			'Failed to assert that post field had correct name for post type.'
 		);
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			$value_format,
 			$post_field,
 			'Failed to assert that post field had correct value.'
