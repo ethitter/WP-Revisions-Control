@@ -24,7 +24,8 @@
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
 		"start": "wp-scripts start",
-		"test:e2e": "wp-scripts test-e2e",
-		"test:unit": "wp-scripts test-unit-js"
+    "test": "npm run test:e2e && npm run test:unit"
+		"test:e2e": "wp-scripts test-e2e --passWithNoTests",
+		"test:unit": "wp-scripts test-unit-js --passWithNoTests"
 	}
 }
