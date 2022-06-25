@@ -35,6 +35,9 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 
 ## Changelog ##
 
+### 1.4.3 ###
+* Fix translations in block editor.
+
 ### 1.4.2 ###
 * Fix notice appearing on Widgets Block Editor.
 
@@ -60,6 +63,10 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 * Initial public release
 
 ## Upgrade Notice ##
+
+### 1.4.3 ###
+
+Fixes translations in block editor.
 
 ### 1.4.2 ###
 Fixes notice appearing on Widgets Block Editor.

@@ -4,7 +4,7 @@
  * Plugin URI: https://ethitter.com/plugins/wp-revisions-control/
  * Description: Control how many revisions are stored for each post type
  * Author: Erick Hitter
- * Version: 1.4.2
+ * Version: 1.4.3
  * Author URI: https://ethitter.com/
  * Text Domain: wp-revisions-control
  * Domain Path: /languages/
