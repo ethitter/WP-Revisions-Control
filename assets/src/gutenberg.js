@@ -7,7 +7,7 @@ const { useState } = require( '@wordpress/element' );
 const { __, _n, sprintf } = require( '@wordpress/i18n' );
 const { registerPlugin } = require( '@wordpress/plugins' );
 
-const metaKey = window.wpRevisionsControlBlockEditorSettings.metaKey;
+const metaKey = '_wp_rev_ctl_limit';
 const slug = 'wp-revisions-control';
 
 /**
