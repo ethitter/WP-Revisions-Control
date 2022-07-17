@@ -168,14 +168,6 @@ class Block_Editor {
 			$asset_data['version']
 		);
 
-		wp_localize_script(
-			$handle,
-			'wpRevisionsControlBlockEditorSettings',
-			array(
-				'metaKey' => WP_REVISIONS_CONTROL_LIMIT_META_KEY,
-			)
-		);
-
 		wp_set_script_translations(
 			$handle,
 			'wp-revisions-control',
