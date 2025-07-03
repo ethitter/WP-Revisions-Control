@@ -12,7 +12,8 @@ if ( ! $wp_revisions_control_tests_tests_dir ) {
 }
 
 if ( ! file_exists( $wp_revisions_control_tests_tests_dir . '/includes/functions.php' ) ) {
-	echo "Could not find $wp_revisions_control_tests_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL; // WPCS: XSS ok.
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo "Could not find $wp_revisions_control_tests_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL;
 	exit( 1 );
 }
 
@@ -35,6 +36,7 @@ if ( ! function_exists( 'post_revisions_meta_box' ) ) {
  * Manually load the plugin being tested.
  */
 function wp_revisions_control_tests_manually_load_plugin() {
+	// phpcs:ignore Modernize.FunctionCalls.Dirname.FileConstant
 	require dirname( dirname( __FILE__ ) ) . '/wp-revisions-control.php';
 }
 tests_add_filter( 'muplugins_loaded', 'wp_revisions_control_tests_manually_load_plugin' );
