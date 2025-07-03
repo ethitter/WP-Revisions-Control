@@ -3,8 +3,8 @@ Contributors: ethitter
 Donate link: https://ethitter.com/donate/
 Tags: revision, revisions, admin
 Requires at least: 3.6
-Tested up to: 6.0
-Stable tag: 1.4.3
+Tested up to: 6.8
+Stable tag: 1.4.4
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -36,6 +36,9 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 
 == Changelog ==
 
+= 1.4.4 =
+* Fix error displayed in block editor when post type doesn't support revisions.
+
 = 1.4.3 =
 * Fix translations in block editor.
 
@@ -64,6 +67,10 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 * Initial public release
 
 == Upgrade Notice ==
+
+= 1.4.4 =
+
+Fixes error displayed in block editor when post type doesn't support revisions.
 
 = 1.4.3 =
 

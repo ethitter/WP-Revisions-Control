@@ -149,9 +149,13 @@ class Block_Editor {
 	 * Register Gutenberg script.
 	 */
 	public function action_enqueue_block_editor_assets() {
-		global $pagenow;
+		global $pagenow, $typenow;
 
 		if ( 'widgets.php' === $pagenow ) {
+			return;
+		}
+
+		if ( ! post_type_supports( $typenow, 'revisions' ) ) {
 			return;
 		}
 
