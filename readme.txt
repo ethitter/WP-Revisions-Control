@@ -3,7 +3,7 @@ Contributors: ethitter
 Donate link: https://ethitter.com/donate/
 Tags: revision, revisions, admin
 Requires at least: 3.6
-Tested up to: 6.0
+Tested up to: 6.8
 Stable tag: 1.4.3
 Requires PHP: 5.6
 License: GPLv2 or later
