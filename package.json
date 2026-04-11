@@ -19,7 +19,7 @@
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
-		"readme": "wp-readme-to-md",
+		"readme": "wp-readme-to-md --screenshot-url=https://git-cdn.e15r.co/wp-plugins/wp-revisions-control/-/raw/master/.wordpress-org/{screenshot}.png",
 		"start": "wp-scripts start",
 		"test": "npm run test:e2e && npm run test:unit",
 		"test:e2e": "wp-scripts test-e2e --passWithNoTests",
