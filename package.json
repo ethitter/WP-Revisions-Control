@@ -2,29 +2,26 @@
 	"name": "wp-revisions-control",
 	"version": "0.1.0",
 	"description": "Control how many revisions are stored for each post type",
-	"main": "Gruntfile.js",
 	"author": "Erick Hitter",
 	"devDependencies": {
-		"@wordpress/scripts": "^23.2.0",
-		"grunt": "^1.5.3",
-		"grunt-wp-i18n": "^1.0.3",
-		"grunt-wp-readme-to-markdown": "^2.1.0",
-		"prettier": "npm:wp-prettier@^2.6.2"
+		"@wordpress/scripts": "^31.8.0",
+		"prettier": "npm:wp-prettier@^3.0.3",
+		"wp-readme-to-markdown": "^1.0.1"
 	},
 	"scripts": {
 		"build": "wp-scripts build",
 		"check-engines": "wp-scripts check-engines",
 		"check-licenses": "wp-scripts check-licenses",
 		"format": "wp-scripts format",
-		"grunt": "grunt",
 		"lint:css": "wp-scripts lint-style",
 		"lint:js": "wp-scripts lint-js",
 		"lint:md:docs": "wp-scripts lint-md-docs",
 		"lint:pkg-json": "wp-scripts lint-pkg-json",
 		"packages-update": "wp-scripts packages-update",
 		"plugin-zip": "wp-scripts plugin-zip",
+		"readme": "wp-readme-to-md",
 		"start": "wp-scripts start",
-    "test": "npm run test:e2e && npm run test:unit",
+		"test": "npm run test:e2e && npm run test:unit",
 		"test:e2e": "wp-scripts test-e2e --passWithNoTests",
 		"test:unit": "wp-scripts test-unit-js --passWithNoTests"
 	}
