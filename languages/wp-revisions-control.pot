@@ -1,35 +1,54 @@
-# Copyright (C) 2025 Erick Hitter
-# This file is distributed under the same license as the WP Revisions Control package.
+# Copyright (C) 2026 Erick Hitter
+# This file is distributed under the same license as the WP Revisions Control plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: WP Revisions Control 1.4.4\n"
-"Report-Msgid-Bugs-To: "
-"https://wordpress.org/support/plugin/wp-revisions-control\n"
-"POT-Creation-Date: 2025-07-03 22:22:28+00:00\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2025-MO-DA HO:MI+ZONE\n"
+"Project-Id-Version: WP Revisions Control 1.4.5\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wp-revisions-control\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: en\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Country: United States\n"
-"X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: "
-"__;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;_nx_noop:1,2,3c;esc_"
-"attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;esc_html_x:1,2c;\n"
-"X-Poedit-Basepath: ../\n"
-"X-Poedit-SearchPath-0: .\n"
-"X-Poedit-Bookmarks: \n"
-"X-Textdomain-Support: yes\n"
-"X-Generator: grunt-wp-i18n 1.0.3\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-11T21:45:18+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: wp-revisions-control\n"
+
+#. Plugin Name of the plugin
+#: wp-revisions-control.php
+#: assets/build/gutenberg.js:1
+#: assets/src/gutenberg.js:28
+msgid "WP Revisions Control"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: wp-revisions-control.php
+msgid "https://ethitter.com/plugins/wp-revisions-control/"
+msgstr ""
+
+#. Description of the plugin
+#: wp-revisions-control.php
+msgid "Control how many revisions are stored for each post type"
+msgstr ""
+
+#. Author of the plugin
+#: wp-revisions-control.php
+msgid "Erick Hitter"
+msgstr ""
+
+#. Author URI of the plugin
+#: wp-revisions-control.php
+msgid "https://ethitter.com/"
+msgstr ""
 
 #: inc/class-block-editor.php:58
 msgid "Number of revisions to retain."
 msgstr ""
 
 #: inc/class-wp-revisions-control-bulk-actions.php:59
+#: assets/build/gutenberg.js:2
+#: assets/src/gutenberg.js:84
+#: assets/src/gutenberg.js:89
 msgid "Purge excess revisions"
 msgstr ""
 
@@ -50,21 +69,17 @@ msgid "WP Revisions Control encountered an unspecified error."
 msgstr ""
 
 #: inc/class-wp-revisions-control.php:138
-msgid ""
-"Set the number of revisions to save for each post type listed. To retain "
-"all revisions for a given post type, leave the field empty."
+msgid "Set the number of revisions to save for each post type listed. To retain all revisions for a given post type, leave the field empty."
 msgstr ""
 
 #: inc/class-wp-revisions-control.php:139
 msgid "If a post type isn't listed, revisions are not enabled for that post type."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:150
 #. translators: 1. Filter tag.
-msgid ""
-"A local change is causing this plugin's functionality to run at a priority "
-"other than the default. If you experience difficulties with the plugin, "
-"please unhook any functions from the %1$s filter."
+#: inc/class-wp-revisions-control.php:150
+#, php-format
+msgid "A local change is causing this plugin's functionality to run at a priority other than the default. If you experience difficulties with the plugin, please unhook any functions from the %1$s filter."
 msgstr ""
 
 #: inc/class-wp-revisions-control.php:278
@@ -95,11 +110,10 @@ msgstr ""
 msgid "Purge these revisions"
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:340
 #. translators: 1. Text input field.
-msgid ""
-"Limit this post to %1$s revisions. Leave this field blank for default "
-"behavior."
+#: inc/class-wp-revisions-control.php:340
+#, php-format
+msgid "Limit this post to %1$s revisions. Leave this field blank for default behavior."
 msgstr ""
 
 #: inc/class-wp-revisions-control.php:365
@@ -114,8 +128,9 @@ msgstr ""
 msgid "You are not allowed to edit this post."
 msgstr ""
 
-#: inc/class-wp-revisions-control.php:401
 #. translators: 1. Number of removed revisions, already formatted for locale.
+#: inc/class-wp-revisions-control.php:401
+#, php-format
 msgid "Removed %1$s revisions associated with this post."
 msgstr ""
 
@@ -124,22 +139,45 @@ msgstr ""
 msgid "No revisions to remove."
 msgstr ""
 
-#. Plugin Name of the plugin/theme
-msgid "WP Revisions Control"
+#: assets/build/gutenberg.js:1
+#: assets/src/gutenberg.js:144
+msgid "Excess revisions scheduled for removal."
 msgstr ""
 
-#. Plugin URI of the plugin/theme
-msgid "https://ethitter.com/plugins/wp-revisions-control/"
+#: assets/build/gutenberg.js:1
+#: assets/src/gutenberg.js:150
+msgid "Failed to schedule excess revisions for removal."
 msgstr ""
 
-#. Description of the plugin/theme
-msgid "Control how many revisions are stored for each post type"
+#: assets/build/gutenberg.js:1
+#: assets/src/gutenberg.js:32
+msgid "Number of revisions to retain:"
 msgstr ""
 
-#. Author of the plugin/theme
-msgid "Erick Hitter"
+#: assets/build/gutenberg.js:1
+#: assets/src/gutenberg.js:36
+msgid "Leave blank to keep all revisions."
 msgstr ""
 
-#. Author URI of the plugin/theme
-msgid "https://ethitter.com/"
+#: assets/build/gutenberg.js:1
+#: assets/src/gutenberg.js:68
+msgid "This will remove all revisions."
+msgstr ""
+
+#. translators: 1. Number of revisions to keep.
+#: assets/build/gutenberg.js:2
+#: assets/src/gutenberg.js:72
+msgid "This will remove all but the most-recent revision."
+msgid_plural "This will remove all but the %1$d most-recent revisions."
+msgstr[0] ""
+msgstr[1] ""
+
+#: assets/build/gutenberg.js:2
+#: assets/src/gutenberg.js:98
+msgid "Purge"
+msgstr ""
+
+#: assets/build/gutenberg.js:2
+#: assets/src/gutenberg.js:102
+msgid "Cancel"
 msgstr ""

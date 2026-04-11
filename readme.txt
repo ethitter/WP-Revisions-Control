@@ -3,8 +3,8 @@ Contributors: ethitter
 Donate link: https://ethitter.com/donate/
 Tags: revision, revisions, admin
 Requires at least: 3.6
-Tested up to: 6.8
-Stable tag: 1.4.4
+Tested up to: 6.9
+Stable tag: 1.4.5
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -35,6 +35,9 @@ Thanks to Maria Ramos at [WebHostingHub](http://www.webhostinghub.com/), the plu
 Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the **WP Revisions Control** section.
 
 == Changelog ==
+
+= 1.4.5 =
+* Update build process and rebuild plugin assets.
 
 = 1.4.4 =
 * Fix error displayed in block editor when post type doesn't support revisions.
@@ -67,6 +70,10 @@ Navigate to **Settings > Writing** in your WordPress Dashboard, and look for the
 * Initial public release
 
 == Upgrade Notice ==
+
+= 1.4.5 =
+
+Updates build process and rebuild plugin assets.
 
 = 1.4.4 =
 
